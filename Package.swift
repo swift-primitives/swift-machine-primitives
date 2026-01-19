@@ -30,6 +30,15 @@ let package = Package(
                 .strictMemorySafety()
             ]
         ),
+        .testTarget(
+            name: "Machine Primitives Tests",
+            dependencies: [
+                "Machine Primitives",
+            ],
+            swiftSettings: [
+                .strictMemorySafety()
+            ]
+        ),
     ],
     swiftLanguageModes: [.v6]
 )

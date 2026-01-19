@@ -5,18 +5,19 @@ extension Machine {
     /// a child node. It is generic over:
     /// - `NodeID`: The node identifier type
     /// - `Checkpoint`: The cursor checkpoint type (varies by cursor)
+    /// - `Mode`: The capture mode (`Mode.Reference` or `Mode.Unchecked`)
     /// - `Failure`: The error type for fallible operations
     /// - `Extra`: Extension point for façade-specific frame types (use `Never` if not needed)
     @safe
-    public enum Frame<NodeID, Checkpoint, Failure: Error, Extra> {
+    public enum Frame<NodeID, Checkpoint, Mode, Failure: Error, Extra> {
         /// Apply a non-throwing transform to the result.
-        case map(transform: Transform.Erased)
+        case map(transform: Transform.Erased<Mode>)
 
         /// Apply a throwing transform to the result.
-        case tryMap(transform: Transform.Throwing<Failure>)
+        case tryMap(transform: Transform.Throwing<Mode, Failure>)
 
         /// Select the next node based on the result.
-        case flatMap(next: Next.Erased<NodeID>)
+        case flatMap(next: Next.Erased<Mode, NodeID>)
 
         /// Sequence continuation state.
         case sequence(Sequence)
@@ -25,13 +26,13 @@ extension Machine {
         case oneOf(alternatives: [NodeID], index: Int, savedCheckpoint: Checkpoint)
 
         /// Accumulation frame for many - stores handles to accumulated results.
-        case many(child: NodeID, savedCheckpoint: Checkpoint, resultHandles: [Value.Handle], finalize: Finalize.Array)
+        case many(child: NodeID, savedCheckpoint: Checkpoint, resultHandles: [Value<Mode>.Handle], finalize: Finalize.Array<Mode>)
 
         /// Fold frame - accumulates without allocation using combine function.
-        case fold(child: NodeID, savedCheckpoint: Checkpoint, accumulatorHandle: Value.Handle, combine: Combine.Erased)
+        case fold(child: NodeID, savedCheckpoint: Checkpoint, accumulatorHandle: Value<Mode>.Handle, combine: Combine.Erased<Mode>)
 
         /// Optional frame - stores handle to none value for backtracking.
-        case optional(savedCheckpoint: Checkpoint, wrapSome: Transform.Erased, noneHandle: Value.Handle)
+        case optional(savedCheckpoint: Checkpoint, wrapSome: Transform.Erased<Mode>, noneHandle: Value<Mode>.Handle)
 
         /// Marker for recursive call return.
         case recursiveExit

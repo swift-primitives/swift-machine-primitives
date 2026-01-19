@@ -6,7 +6,7 @@ extension Machine.Value {
     /// the entire arena can be reset for reuse.
     public struct Arena: ~Copyable {
         @usableFromInline
-        var values: [Machine.Value?]
+        var values: [Machine.Value<Mode>?]
 
         @usableFromInline
         var nextSlot: UInt32
@@ -14,13 +14,13 @@ extension Machine.Value {
         /// Creates an arena with the specified initial capacity.
         @inlinable
         public init(capacity: Int = 64) {
-            self.values = [Machine.Value?](repeating: nil, count: capacity)
+            self.values = [Machine.Value<Mode>?](repeating: nil, count: capacity)
             self.nextSlot = 0
         }
 
         /// Allocates a value in the arena and returns a handle to it.
         @inlinable
-        public mutating func allocate(_ value: consuming Machine.Value) -> Handle {
+        public mutating func allocate(_ value: consuming Machine.Value<Mode>) -> Handle {
             let slot = nextSlot
             if Int(slot) >= values.count {
                 values.append(contentsOf: repeatElement(nil, count: values.count))
@@ -32,7 +32,7 @@ extension Machine.Value {
 
         /// Reads the value at the given handle without removing it.
         @inlinable
-        public func read(_ handle: Handle) -> Machine.Value {
+        public func read(_ handle: Handle) -> Machine.Value<Mode> {
             guard let value = values[Int(handle.slot)] else {
                 fatalError("Arena.read: slot \(handle.slot) is empty")
             }
@@ -41,7 +41,7 @@ extension Machine.Value {
 
         /// Releases and returns the value at the given handle.
         @inlinable
-        public mutating func release(_ handle: Handle) -> Machine.Value {
+        public mutating func release(_ handle: Handle) -> Machine.Value<Mode> {
             guard let value = values[Int(handle.slot)] else {
                 fatalError("Arena.release: slot \(handle.slot) is empty")
             }

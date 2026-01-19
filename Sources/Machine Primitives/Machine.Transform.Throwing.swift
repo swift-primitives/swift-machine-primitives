@@ -4,15 +4,55 @@ extension Machine.Transform {
     /// Generic over `Failure` to support both generic error types (Parsing)
     /// and fixed error types (Binary's `Fault`).
     @safe
-    public struct Throwing<Failure: Error> {
-        public let apply: (Machine.Value) throws(Failure) -> Machine.Value
+    public struct Throwing<Mode, Failure: Error>: Sendable {
+        public let capture: Machine.Capture.RawID
+
+        @usableFromInline
+        let _apply: @Sendable (
+            borrowing Machine.Capture.Frozen<Mode>,
+            Machine.Value<Mode>
+        ) throws(Failure) -> Machine.Value<Mode>
 
         @inlinable
-        public init<In, Out>(_ transform: @escaping (In) throws(Failure) -> Out) {
-            self.apply = { (value: Machine.Value) throws(Failure) -> Machine.Value in
-                let input = value.unsafeTake(In.self)
-                return Machine.Value.make(try transform(input))
-            }
+        public func apply(
+            using captures: borrowing Machine.Capture.Frozen<Mode>,
+            _ value: Machine.Value<Mode>
+        ) throws(Failure) -> Machine.Value<Mode> {
+            try _apply(captures, value)
+        }
+    }
+}
+
+extension Machine.Transform.Throwing where Mode == Machine.Capture.Mode.Reference {
+    @inlinable
+    public init<In, Out: Sendable>(
+        capture: Machine.Capture.ID<@Sendable (In) throws(Failure) -> Out>
+    ) {
+        let raw = capture.raw
+        self.capture = raw
+        // [API-ERR-007] Explicit throws(Failure) annotation required for type inference
+        self._apply = { captures, value throws(Failure) -> Machine.Value<Mode> in
+            let slot = captures.slots[raw.rawValue]
+            let transform = slot.read((@Sendable (In) throws(Failure) -> Out).self)
+            let input = value.unsafeTake(In.self)
+            return Machine.Value<Mode>.make(try transform(input))
+        }
+    }
+}
+
+extension Machine.Transform.Throwing where Mode == Machine.Capture.Mode.Unchecked {
+    @inlinable
+    public init<In, Out>(
+        capture: Machine.Capture.ID<(In) throws(Failure) -> Out>
+    ) {
+        let raw = capture.raw
+        self.capture = raw
+        // [API-ERR-007] Explicit throws(Failure) annotation required for type inference
+        self._apply = { captures, value throws(Failure) -> Machine.Value<Mode> in
+            let slot = captures.slots[raw.rawValue]
+            let transform = slot.read(((In) throws(Failure) -> Out).self)
+            let input = value.unsafeTake(In.self)
+            return Machine.Value<Mode>.make(try transform(input))
         }
     }
 }

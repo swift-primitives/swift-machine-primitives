@@ -1,4 +1,4 @@
-public import Identity_Primitives
+@_exported public import Identity_Primitives
 
 extension Machine {
     /// A program consisting of a graph of nodes.
@@ -8,30 +8,30 @@ extension Machine {
     /// is generic over:
     /// - `Leaf`: The primitive cursor operations
     /// - `Failure`: The error type for fallible operations
-    public struct Program<Leaf, Failure: Error> {
-        public var nodes: [Node<Leaf, Failure>]
-
+    /// - `Mode`: The capture mode (`Mode.Reference` or `Mode.Unchecked`)
+    public struct Program<Leaf, Failure: Error, Mode> {
+        public let nodes: [Node<Leaf, Failure, Mode>]
+        public let captures: Machine.Capture.Frozen<Mode>
         public let maxDepth: Int?
 
-        @inlinable
-        public init(maxDepth: Int? = nil) {
-            self.nodes = []
+        @usableFromInline
+        init(
+            nodes: [Node<Leaf, Failure, Mode>],
+            captures: Machine.Capture.Frozen<Mode>,
+            maxDepth: Int?
+        ) {
+            self.nodes = nodes
+            self.captures = captures
             self.maxDepth = maxDepth
-        }
-
-        /// Allocates a new node in the program and returns its ID.
-        @inlinable
-        public mutating func allocate(_ node: Node<Leaf, Failure>) -> Node<Leaf, Failure>.ID {
-            let id = Node<Leaf, Failure>.ID(nodes.count)
-            nodes.append(node)
-            return id
         }
 
         /// Accesses a node by its ID.
         @inlinable
-        public subscript(id: Node<Leaf, Failure>.ID) -> Node<Leaf, Failure> {
-            get { nodes[id.rawValue] }
-            set { nodes[id.rawValue] = newValue }
+        public subscript(id: Node<Leaf, Failure, Mode>.ID) -> Node<Leaf, Failure, Mode> {
+            nodes[id.rawValue]
         }
     }
 }
+
+extension Machine.Program: Sendable
+    where Leaf: Sendable, Failure: Sendable, Mode: Sendable {}
