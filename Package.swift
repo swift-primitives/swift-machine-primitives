@@ -16,6 +16,10 @@ let package = Package(
             name: "Machine Primitives",
             targets: ["Machine Primitives"]
         ),
+        .library(
+            name: "Machine Primitives Conveniences",
+            targets: ["Machine Primitives Conveniences"]
+        ),
     ],
     dependencies: [
         .package(path: "../swift-identity-primitives"),
@@ -25,6 +29,15 @@ let package = Package(
             name: "Machine Primitives",
             dependencies: [
                 .product(name: "Identity Primitives", package: "swift-identity-primitives"),
+            ],
+            swiftSettings: [
+                .strictMemorySafety()
+            ]
+        ),
+        .target(
+            name: "Machine Primitives Conveniences",
+            dependencies: [
+                "Machine Primitives",
             ],
             swiftSettings: [
                 .strictMemorySafety()
