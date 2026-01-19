@@ -27,6 +27,9 @@ extension Machine {
         /// Accumulation frame for many - stores handles to accumulated results.
         case many(child: NodeID, savedCheckpoint: Checkpoint, resultHandles: [Value.Handle], finalize: Finalize.Array)
 
+        /// Fold frame - accumulates without allocation using combine function.
+        case fold(child: NodeID, savedCheckpoint: Checkpoint, accumulatorHandle: Value.Handle, combine: Combine.Erased)
+
         /// Optional frame - stores handle to none value for backtracking.
         case optional(savedCheckpoint: Checkpoint, wrapSome: Transform.Erased, noneHandle: Value.Handle)
 
