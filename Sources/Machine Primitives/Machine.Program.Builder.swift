@@ -17,7 +17,7 @@ extension Machine {
 
         @inlinable
         public mutating func allocate(_ node: Node<Leaf, Failure, Mode>) -> Node<Leaf, Failure, Mode>.ID {
-            let id = Node<Leaf, Failure, Mode>.ID(nodes.count)
+            let id = Node<Leaf, Failure, Mode>.ID(__unchecked: (), nodes.count)
             nodes.append(node)
             return id
         }
