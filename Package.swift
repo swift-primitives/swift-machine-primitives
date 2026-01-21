@@ -22,13 +22,19 @@ let package = Package(
         ),
     ],
     dependencies: [
+        .package(path: "../swift-handle-primitives"),
         .package(path: "../swift-identity-primitives"),
+        .package(path: "../swift-index-primitives"),
+        .package(path: "../swift-bit-primitives"),
     ],
     targets: [
         .target(
             name: "Machine Primitives",
             dependencies: [
+                .product(name: "Handle Primitives", package: "swift-handle-primitives"),
                 .product(name: "Identity Primitives", package: "swift-identity-primitives"),
+                .product(name: "Index Primitives", package: "swift-index-primitives"),
+                .product(name: "Bit Primitives", package: "swift-bit-primitives"),
             ],
             swiftSettings: [
                 .strictMemorySafety()

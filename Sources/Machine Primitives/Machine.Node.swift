@@ -13,11 +13,9 @@ extension Machine {
     /// and combining results according to the combinator structure.
     @safe
     public enum Node<Leaf, Failure: Error, Mode> {
-        /// Phantom type tag for node IDs.
-        public enum Tag {}
-
+        
         /// A unique identifier for a node in the program.
-        public typealias ID = Tagged<Tag, Int>
+        public typealias ID = Tagged<Self, Int>
 
         /// A primitive cursor operation.
         case leaf(Leaf)
