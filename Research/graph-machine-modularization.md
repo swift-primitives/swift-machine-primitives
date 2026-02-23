@@ -4,7 +4,8 @@
 ---
 version: 1.0.0
 last_updated: 2026-02-23
-status: RECOMMENDATION
+status: SUPERSEDED
+superseded_by: modularization-strategy.md
 tier: 2
 scope: graph-primitives, machine-primitives
 workflow: investigation
@@ -391,6 +392,58 @@ Graph dependency confined to Program module.
 
 Keep as single module. Tightly integrated execution engine.
 
+### Cross-Reference: Future Additions
+
+The graph-primitives roadmap (`graph-primitives-roadmap.md`) identifies 8 missing capabilities. The machine analysis document (`machine-program-analysis-and-optimization.md`) identifies optimization passes, error recovery, and borrowed output as future work. The graph operations audit (`graph-operations-audit.md`) identifies missing basic operations. Each future addition must land cleanly in the proposed module structure.
+
+#### Graph-Primitives — Roadmap Items Mapped to Modules
+
+| Priority | Addition | Target Module | Notes |
+|----------|----------|---------------|-------|
+| 1 | Degree queries (`inDegree`, `outDegree`, `hasEdge`) | **Analysis** | Same dependency profile as existing analysis algorithms. Adds files to Analysis module. |
+| 2 | DOT/Graphviz export | **New: Graph Primitives Export** | Does not fit existing algorithm modules — it's output generation, not graph analysis or transformation. Depends on Core only (traverses nodes, emits string). Low file count (1–2 files). |
+| 3 | Structural equality/hashing | **Core** (`Equatable`/`Hashable` conformance) + **Analysis** (Merkle subtree hashing) | `Graph.Sequential: Equatable where Payload: Equatable` is a Core conformance. Structural subtree hashing for CSE is an analysis algorithm. Split across two modules. |
+| 4 | Dominator trees | **Analysis** | Same pattern as SCC, reachable. Adds files to Analysis module. |
+| 5 | Node contraction (chain fusion) | **Transform** | Structural graph-to-graph transformation, same as subgraph. Requires degree queries from Analysis (cross-module dependency from Transform → Analysis — first lateral edge). |
+| 6 | Graph diff | **Analysis** | Comparison algorithm, depends on structural equality from Core. |
+| 7 | Edge metadata (new type) | **Core** | New graph type alongside `Graph.Sequential`. Additive to Core. |
+| 8 | Incremental builder | **Core** | Builder variant. Additive to Core. |
+
+**One lateral dependency emerges**: Node contraction (Transform) needs degree queries (Analysis). This is the only cross-module dependency among algorithm modules. Two resolution options:
+
+1. Move degree queries to Core (they're basic enough — `outDegree` is just `extract.adjacent(payload).count`). This preserves the flat fan topology.
+2. Accept the lateral edge. Transform → Analysis is a natural dependency direction (transforms may use analysis results).
+
+Option (1) is cleaner. Degree queries are fundamental properties, not analysis algorithms. They should live in Core alongside `count` and `isEmpty`.
+
+**DOT export** warrants its own module rather than being folded into Transform. It produces `String` output (not a new graph), has different consumers (debugging tools, not graph algorithms), and its dependency footprint is Core-only. Adding it to the umbrella:
+
+```swift
+@_exported import Graph_Primitives_Export
+```
+
+#### Machine-Primitives — Future Work Mapped to Modules
+
+| Addition | Source | Target Module | Notes |
+|----------|--------|---------------|-------|
+| Error recovery (new Node variants) | Analysis & Optimization §Error Recovery | **Carriers** | Node lives in Carriers. New `.synchronize`, `.label`, `.commit` variants add to the existing Node enum. |
+| Borrowed output (new Value types) | Analysis & Optimization §Borrowed Output | **Core** | New Value handle types are runtime infrastructure. Additive to Core. |
+| Optimization passes (dead node elimination, chain fusion, CSE) | Analysis & Optimization §Optimization | **New: Machine Primitives Optimization** | Composes graph algorithms with machine-specific logic. Depends on Core + Carriers + Program + Graph Primitives Analysis. Not yet proposed — additive module when optimization work begins. |
+| Lookahead analysis | Analysis & Optimization §Lookahead | **New: Machine Primitives Optimization** or parser-machine-primitives | Domain-specific analysis on Node semantics. May belong in parser-machine-primitives if it requires Leaf knowledge. |
+
+**No proposed boundary conflicts**. All future additions land in existing modules (additive) or create new modules (also additive). The umbrella pattern absorbs new modules without consumer impact.
+
+#### Revised Module Count
+
+With future additions accounted for:
+
+- Graph Primitives: 7 → **8 modules** (add Export)
+- Machine Primitives: 5 → **6 modules** (add Optimization, when needed)
+
+Both additions are additive — the initial modularization proceeds as proposed, and new modules are added when the work that motivates them begins.
+
+---
+
 ### Collateral Changes
 
 1. Remove unused re-exports from graph-primitives (Collection, Dictionary, Input)
@@ -412,6 +465,10 @@ Keep as single module. Tightly integrated execution engine.
 ## References
 
 - `implementation-quality-audit-graph-machine-parser.md` — Module organization analysis (constraint poisoning criterion)
+- `machine-program-analysis-and-optimization.md` — Optimization passes, error recovery, borrowed output design space
+- `machine-program-graph-sequential-migration.md` — Migration rationale and enabled capabilities
+- `swift-graph-primitives/Research/graph-primitives-roadmap.md` — 8 gap items with prioritization
+- `swift-graph-primitives/Research/graph-operations-audit.md` — Canonical Graph ADT coverage (degree queries, hasEdge, Equatable)
 - [PATTERN-022] — `~Copyable` constraint poisoning (not the driver here)
 - [API-IMPL-005] — One type per file
 - [RES-003] — Research document structure
