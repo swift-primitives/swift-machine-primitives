@@ -115,17 +115,86 @@ extension Machine {
             return _project(T.self).pointee
         }
 
-        /// Extracts the value as the specified type without type checking.
+        /// Precondition-checked type projection.
         ///
-        /// - Precondition: The value must have been created with the same type.
-        @inlinable
-        public func unsafeTake<T>(_ expectedType: T.Type) -> T {
+        /// Reads the stored value after verifying the type matches via `ObjectIdentifier`.
+        /// Named to align with `Capture.Slot.read(_:)` which performs the identical operation.
+        ///
+        /// - Precondition: The value must have been created with the same type `T`.
+        @usableFromInline
+        func read<T>(_ expectedType: T.Type) -> T {
             precondition(
                 type == ObjectIdentifier(T.self),
                 "Machine.Value type mismatch: expected \(T.self), got type with id \(type)"
             )
             return _project(T.self).pointee
         }
+    }
+}
+
+// MARK: - Reference Mode Value Operations
+
+extension Machine.Value where Mode == Machine.Capture.Mode.Reference {
+    /// Applies a typed function to this erased value, producing a new erased value.
+    ///
+    /// - Precondition: `self` was created from a value of type `In`.
+    @usableFromInline
+    func apply<In, Out: Sendable>(_ transform: (In) -> Out) -> Machine.Value<Mode> {
+        .make(transform(read(In.self)))
+    }
+
+    /// Applies a typed throwing function to this erased value.
+    ///
+    /// - Precondition: `self` was created from a value of type `In`.
+    @usableFromInline
+    func apply<In, Out: Sendable, E: Error>(
+        _ transform: (In) throws(E) -> Out
+    ) throws(E) -> Machine.Value<Mode> {
+        .make(try transform(read(In.self)))
+    }
+
+    /// Combines this value with another using a typed binary function.
+    ///
+    /// - Precondition: `self` was created from type `A`, `other` from type `B`.
+    @usableFromInline
+    func combine<A, B, Out: Sendable>(
+        _ other: Machine.Value<Mode>,
+        using combineFn: (A, B) -> Out
+    ) -> Machine.Value<Mode> {
+        .make(combineFn(read(A.self), other.read(B.self)))
+    }
+}
+
+// MARK: - Unchecked Mode Value Operations
+
+extension Machine.Value where Mode == Machine.Capture.Mode.Unchecked {
+    /// Applies a typed function to this erased value, producing a new erased value.
+    ///
+    /// - Precondition: `self` was created from a value of type `In`.
+    @usableFromInline
+    func apply<In, Out>(_ transform: (In) -> Out) -> Machine.Value<Mode> {
+        .make(transform(read(In.self)))
+    }
+
+    /// Applies a typed throwing function to this erased value.
+    ///
+    /// - Precondition: `self` was created from a value of type `In`.
+    @usableFromInline
+    func apply<In, Out, E: Error>(
+        _ transform: (In) throws(E) -> Out
+    ) throws(E) -> Machine.Value<Mode> {
+        .make(try transform(read(In.self)))
+    }
+
+    /// Combines this value with another using a typed binary function.
+    ///
+    /// - Precondition: `self` was created from type `A`, `other` from type `B`.
+    @usableFromInline
+    func combine<A, B, Out>(
+        _ other: Machine.Value<Mode>,
+        using combineFn: (A, B) -> Out
+    ) -> Machine.Value<Mode> {
+        .make(combineFn(read(A.self), other.read(B.self)))
     }
 }
 

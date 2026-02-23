@@ -29,8 +29,7 @@ extension Machine.Transform.Erased where Mode == Machine.Capture.Mode.Reference 
         self.capture = raw
         self._apply = { captures, value in
             captures.withRaw(raw, as: (@Sendable (In) -> Out).self) { transform in
-                let input = value.unsafeTake(In.self)
-                return Machine.Value<Mode>.make(transform(input))
+                value.apply(transform)
             }
         }
     }
@@ -45,8 +44,7 @@ extension Machine.Transform.Erased where Mode == Machine.Capture.Mode.Unchecked 
         self.capture = raw
         self._apply = { captures, value in
             captures.withRaw(raw, as: ((In) -> Out).self) { transform in
-                let input = value.unsafeTake(In.self)
-                return Machine.Value<Mode>.make(transform(input))
+                value.apply(transform)
             }
         }
     }

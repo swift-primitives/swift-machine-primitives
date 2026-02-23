@@ -43,10 +43,10 @@ struct MachineValueTests {
         #expect(extracted == nil)
     }
 
-    @Test("unsafeTake extracts correct type")
-    func unsafeTakeExtractsCorrectType() {
+    @Test("take extracts correct type")
+    func takeExtractsCorrectType() {
         let value = Value.make(99.5)
-        let extracted = value.unsafeTake(Double.self)
+        let extracted = value.take(Double.self)
         #expect(extracted == 99.5)
     }
 

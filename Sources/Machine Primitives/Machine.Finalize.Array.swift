@@ -43,7 +43,7 @@ extension Machine.Finalize.Array where Mode == Machine.Capture.Mode.Reference {
         store: inout Machine.Capture.Store<Mode>
     ) {
         let finalizeFn: @Sendable ([Machine.Value<Mode>]) -> [T] = { values in
-            values.map { $0.unsafeTake(T.self) }
+            values.map { $0.read(T.self) }
         }
         let captureID = store.insert(finalizeFn)
         self.init(capture: captureID)
@@ -70,7 +70,7 @@ extension Machine.Finalize.Array where Mode == Machine.Capture.Mode.Unchecked {
         store: inout Machine.Capture.Store<Mode>
     ) {
         let finalizeFn: ([Machine.Value<Mode>]) -> [T] = { values in
-            values.map { $0.unsafeTake(T.self) }
+            values.map { $0.read(T.self) }
         }
         let captureID = store.insert(finalizeFn)
         self.init(capture: captureID)

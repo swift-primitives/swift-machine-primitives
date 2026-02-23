@@ -34,9 +34,7 @@ extension Machine.Combine.Erased where Mode == Machine.Capture.Mode.Reference {
         self.capture = raw
         self._combine = { captures, a, b in
             captures.withRaw(raw, as: (@Sendable (A, B) -> Out).self) { combineFn in
-                let aVal = a.unsafeTake(A.self)
-                let bVal = b.unsafeTake(B.self)
-                return Machine.Value<Mode>.make(combineFn(aVal, bVal))
+                a.combine(b, using: combineFn)
             }
         }
     }
@@ -51,9 +49,7 @@ extension Machine.Combine.Erased where Mode == Machine.Capture.Mode.Unchecked {
         self.capture = raw
         self._combine = { captures, a, b in
             captures.withRaw(raw, as: ((A, B) -> Out).self) { combineFn in
-                let aVal = a.unsafeTake(A.self)
-                let bVal = b.unsafeTake(B.self)
-                return Machine.Value<Mode>.make(combineFn(aVal, bVal))
+                a.combine(b, using: combineFn)
             }
         }
     }

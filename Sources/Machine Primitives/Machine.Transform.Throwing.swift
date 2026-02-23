@@ -39,8 +39,7 @@ extension Machine.Transform.Throwing where Mode == Machine.Capture.Mode.Referenc
         self._apply = { captures, value throws(Failure) -> Machine.Value<Mode> in
             let slot = captures.slots[raw.rawValue]
             let transform = slot.read((@Sendable (In) throws(Failure) -> Out).self)
-            let input = value.unsafeTake(In.self)
-            return Machine.Value<Mode>.make(try transform(input))
+            return try value.apply(transform)
         }
     }
 }
@@ -57,8 +56,7 @@ extension Machine.Transform.Throwing where Mode == Machine.Capture.Mode.Unchecke
         self._apply = { captures, value throws(Failure) -> Machine.Value<Mode> in
             let slot = captures.slots[raw.rawValue]
             let transform = slot.read(((In) throws(Failure) -> Out).self)
-            let input = value.unsafeTake(In.self)
-            return Machine.Value<Mode>.make(try transform(input))
+            return try value.apply(transform)
         }
     }
 }
