@@ -1,4 +1,4 @@
-@_exported public import Identity_Primitives
+// SDG(specializes): Machine.Program is a directed graph with Graph.Sequential storage
 
 extension Machine {
     /// A program consisting of a graph of nodes.
@@ -9,18 +9,18 @@ extension Machine {
     /// - `Leaf`: The primitive cursor operations
     /// - `Failure`: The error type for fallible operations
     /// - `Mode`: The capture mode (`Mode.Reference` or `Mode.Unchecked`)
-    public struct Program<Leaf, Failure: Error, Mode> {
-        public let nodes: [Node<Leaf, Failure, Mode>]
+    public struct Program<Leaf: Sendable, Failure: Error & Sendable, Mode: Sendable> {
+        public let graph: Graph.Sequential<Node<Leaf, Failure, Mode>, Node<Leaf, Failure, Mode>>
         public let captures: Machine.Capture.Frozen<Mode>
         public let maxDepth: Int?
 
         @usableFromInline
         init(
-            nodes: [Node<Leaf, Failure, Mode>],
+            graph: Graph.Sequential<Node<Leaf, Failure, Mode>, Node<Leaf, Failure, Mode>>,
             captures: Machine.Capture.Frozen<Mode>,
             maxDepth: Int?
         ) {
-            self.nodes = nodes
+            self.graph = graph
             self.captures = captures
             self.maxDepth = maxDepth
         }
@@ -28,10 +28,15 @@ extension Machine {
         /// Accesses a node by its ID.
         @inlinable
         public subscript(id: Node<Leaf, Failure, Mode>.ID) -> Node<Leaf, Failure, Mode> {
-            nodes[id.rawValue]
+            graph[id]
+        }
+
+        /// Analysis accessor for graph algorithms.
+        @inlinable
+        public var analyze: Graph.Sequential<Node<Leaf, Failure, Mode>, Node<Leaf, Failure, Mode>>.Analyze<[Node<Leaf, Failure, Mode>.ID]> {
+            graph.analyze(using: Node.extract)
         }
     }
 }
 
-extension Machine.Program: Sendable
-    where Leaf: Sendable, Failure: Sendable, Mode: Sendable {}
+extension Machine.Program: Sendable {}

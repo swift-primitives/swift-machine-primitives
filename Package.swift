@@ -26,6 +26,7 @@ let package = Package(
         .package(path: "../swift-identity-primitives"),
         .package(path: "../swift-index-primitives"),
         .package(path: "../swift-bit-primitives"),
+        .package(path: "../swift-graph-primitives"),
     ],
     targets: [
         .target(
@@ -35,6 +36,7 @@ let package = Package(
                 .product(name: "Identity Primitives", package: "swift-identity-primitives"),
                 .product(name: "Index Primitives", package: "swift-index-primitives"),
                 .product(name: "Bit Primitives", package: "swift-bit-primitives"),
+                .product(name: "Graph Primitives", package: "swift-graph-primitives"),
             ],
             swiftSettings: [
                 .strictMemorySafety()

@@ -3,29 +3,42 @@ extension Machine {
     ///
     /// `Builder` accumulates nodes and captures during construction,
     /// then produces an immutable `Program` via `build()`.
-    public struct Builder<Leaf, Failure: Error, Mode> {
-        public var nodes: [Node<Leaf, Failure, Mode>]
+    public struct Builder<Leaf: Sendable, Failure: Error & Sendable, Mode: Sendable>: ~Copyable {
+        @usableFromInline
+        var storage: Graph.Sequential<Node<Leaf, Failure, Mode>, Node<Leaf, Failure, Mode>>.Builder
+
         public var captures: Capture.Store<Mode>
         public let maxDepth: Int?
 
         @inlinable
         public init(maxDepth: Int? = nil) {
-            self.nodes = []
+            self.storage = .init()
             self.captures = Capture.Store<Mode>()
             self.maxDepth = maxDepth
         }
 
+        /// The number of nodes allocated so far.
+        @inlinable
+        public var count: Node<Leaf, Failure, Mode>.ID.Count {
+            storage.count
+        }
+
         @inlinable
         public mutating func allocate(_ node: Node<Leaf, Failure, Mode>) -> Node<Leaf, Failure, Mode>.ID {
-            let id = Node<Leaf, Failure, Mode>.ID(__unchecked: (), nodes.count)
-            nodes.append(node)
-            return id
+            storage.allocate(node)
+        }
+
+        /// Access/patch a node by ID (for hole patching).
+        @inlinable
+        public subscript(id: Node<Leaf, Failure, Mode>.ID) -> Node<Leaf, Failure, Mode> {
+            get { storage[id] }
+            set { storage[id] = newValue }
         }
 
         @inlinable
         public consuming func build() -> Program<Leaf, Failure, Mode> {
             Program(
-                nodes: nodes,
+                graph: storage.build(),
                 captures: captures.freeze(),
                 maxDepth: maxDepth
             )

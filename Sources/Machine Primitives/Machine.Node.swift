@@ -1,4 +1,4 @@
-@_exported public import Identity_Primitives
+@_exported public import Graph_Primitives
 
 extension Machine {
     /// A node in the machine's program graph.
@@ -13,9 +13,9 @@ extension Machine {
     /// and combining results according to the combinator structure.
     @safe
     public enum Node<Leaf, Failure: Error, Mode> {
-        
+
         /// A unique identifier for a node in the program.
-        public typealias ID = Tagged<Self, Int>
+        public typealias ID = Graph.Node<Self>
 
         /// A primitive cursor operation.
         case leaf(Leaf)
@@ -63,3 +63,28 @@ extension Machine {
 
 extension Machine.Node: Sendable
     where Leaf: Sendable, Failure: Sendable, Mode: Sendable {}
+
+// MARK: - Graph Adjacency
+
+extension Machine.Node where Leaf: Sendable, Failure: Sendable, Mode: Sendable {
+    /// The structurally adjacent node IDs.
+    public var adjacent: [ID] {
+        switch self {
+        case .leaf, .pure, .hole:          return []
+        case .map(let child, _):           return [child]
+        case .tryMap(let child, _):        return [child]
+        case .flatMap(let child, _):       return [child]
+        case .sequence(let a, let b, _):   return [a, b]
+        case .oneOf(let ids):              return ids
+        case .many(let child, _):          return [child]
+        case .fold(let child, _, _):       return [child]
+        case .optional(let child, _, _):   return [child]
+        case .ref(let id):                 return [id]
+        }
+    }
+
+    /// Extract closure for graph algorithms.
+    public static var extract: Graph.Adjacency.Extract<Self, Self, [ID]> {
+        Graph.Adjacency.Extract { $0.adjacent }
+    }
+}
