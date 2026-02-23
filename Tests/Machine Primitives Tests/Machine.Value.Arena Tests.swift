@@ -123,7 +123,7 @@ struct MachineValueArenaTests {
         let h1 = arena.allocate(Value.make(1))
         let h2 = arena.allocate(Value.make(2))
 
-        var set: Set<Handle> = []
+        var set: Swift.Set<Handle> = []
         set.insert(h1)
         set.insert(h2)
 

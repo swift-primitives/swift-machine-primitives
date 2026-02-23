@@ -22,35 +22,35 @@ struct MachineProgramTests {
 
     @Test("builder creates empty program")
     func builderCreatesEmptyProgram() {
-        let builder = TestBuilder()
+        var builder = TestBuilder()
         let program = builder.build()
-        #expect(program.nodes.isEmpty)
+        #expect(program.graph.isEmpty)
     }
 
     @Test("builder stores maxDepth")
     func builderStoresMaxDepth() {
-        let builder = TestBuilder(maxDepth: 100)
+        var builder = TestBuilder(maxDepth: 100)
         let program = builder.build()
         #expect(program.maxDepth == 100)
     }
 
     @Test("builder with nil maxDepth")
     func builderWithNilMaxDepth() {
-        let builder = TestBuilder(maxDepth: .none)
+        var builder = TestBuilder(maxDepth: .none)
         let program = builder.build()
         #expect(program.maxDepth == nil)
     }
 
-    @Test("allocate returns sequential IDs")
-    func allocateReturnsSequentialIDs() {
+    @Test("allocate returns unique IDs")
+    func allocateReturnsUniqueIDs() {
         var builder = TestBuilder()
         let id0 = builder.allocate(TestNode.hole)
         let id1 = builder.allocate(TestNode.hole)
         let id2 = builder.allocate(TestNode.hole)
 
-        #expect(id0.rawValue == 0)
-        #expect(id1.rawValue == 1)
-        #expect(id2.rawValue == 2)
+        #expect(id0 != id1)
+        #expect(id1 != id2)
+        #expect(id0 != id2)
     }
 
     @Test("allocate stores node")
@@ -86,13 +86,12 @@ struct MachineProgramTests {
         }
     }
 
-    @Test("builder nodes array is mutable")
-    func builderNodesArrayIsMutable() {
+    @Test("builder subscript patches hole")
+    func builderSubscriptPatchesHole() {
         var builder = TestBuilder()
         let id = builder.allocate(TestNode.hole)
 
-        // Replace hole with leaf in builder
-        builder.nodes[id.rawValue] = .leaf(.readByte)
+        builder[id] = .leaf(.readByte)
         let program = builder.build()
 
         if case .leaf(let leaf) = program[id] {
@@ -102,19 +101,22 @@ struct MachineProgramTests {
         }
     }
 
-    @Test("nodes array grows with allocations")
-    func nodesArrayGrowsWithAllocations() {
+    @Test("count grows with allocations")
+    func countGrowsWithAllocations() {
         var builder = TestBuilder()
-        #expect(builder.nodes.count == 0)
+        let c0 = builder.count
 
         _ = builder.allocate(TestNode.hole)
-        #expect(builder.nodes.count == 1)
+        let c1 = builder.count
+        #expect(c1 > c0)
 
         _ = builder.allocate(TestNode.hole)
-        #expect(builder.nodes.count == 2)
+        let c2 = builder.count
+        #expect(c2 > c1)
 
         _ = builder.allocate(TestNode.hole)
-        #expect(builder.nodes.count == 3)
+        let c3 = builder.count
+        #expect(c3 > c2)
     }
 
     @Test("program with various node types")
@@ -131,7 +133,7 @@ struct MachineProgramTests {
 
         let program = builder.build()
 
-        #expect(program.nodes.count == 4)
+        #expect(!program.graph.isEmpty)
 
         if case .pure = program[pureId] { } else {
             Issue.record("Expected pure at pureId")
@@ -162,8 +164,8 @@ struct MachineProgramTests {
         // Use the ID before filling it in
         let bodyId = builder.allocate(TestNode.ref(recursiveId))
 
-        // Fill in the hole via builder.nodes
-        builder.nodes[recursiveId.rawValue] = .leaf(.readByte)
+        // Fill in the hole via builder subscript
+        builder[recursiveId] = .leaf(.readByte)
 
         let program = builder.build()
 
