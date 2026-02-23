@@ -31,6 +31,11 @@ extension Machine.Transform.Throwing where Mode == Machine.Capture.Mode.Referenc
         let raw = capture.raw
         self.capture = raw
         // [API-ERR-007] Explicit throws(Failure) annotation required for type inference
+        // WORKAROUND: Direct slot access instead of withRawThrowing
+        // WHY: Compiler crashes (signal 11) with nested typed throws closures
+        //      when withRawThrowing's body closure annotates throws(Failure).
+        // WHEN TO REMOVE: When the Swift compiler supports nested typed throws
+        //      in closure contexts without crashing.
         self._apply = { captures, value throws(Failure) -> Machine.Value<Mode> in
             let slot = captures.slots[raw.rawValue]
             let transform = slot.read((@Sendable (In) throws(Failure) -> Out).self)
@@ -48,6 +53,7 @@ extension Machine.Transform.Throwing where Mode == Machine.Capture.Mode.Unchecke
         let raw = capture.raw
         self.capture = raw
         // [API-ERR-007] Explicit throws(Failure) annotation required for type inference
+        // WORKAROUND: Direct slot access instead of withRawThrowing (see Reference init above)
         self._apply = { captures, value throws(Failure) -> Machine.Value<Mode> in
             let slot = captures.slots[raw.rawValue]
             let transform = slot.read(((In) throws(Failure) -> Out).self)
