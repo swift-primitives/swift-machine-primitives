@@ -8,3 +8,4 @@
 | machine-program-analysis-and-optimization.md | Analysis capabilities, optimization passes, and open design questions enabled by graph migration | 2026-02-23 | RECOMMENDATION |
 | implementation-quality-audit-graph-machine-parser.md | Cross-package implementation quality and module organization audit | 2026-02-23 | RECOMMENDATION |
 | machine-value-api-surface.md | Machine.Value API surface: value-level functor operations and mechanism confinement | 2026-02-23 | DECISION |
+| graph-machine-modularization.md | Module boundaries for graph-primitives and machine-primitives: timeless core, focused capability modules, umbrella re-exports | 2026-02-23 | RECOMMENDATION |
