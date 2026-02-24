@@ -14,8 +14,7 @@ extension Machine.Capture {
     ///
     /// This conformance is only exercised when `Frozen<Mode.Reference>` derives
     /// Sendable, which requires all stored values to have been Sendable at insertion.
-    @usableFromInline
-    struct Slot: @unchecked Sendable {
+    public struct Slot: @unchecked Sendable {
         @usableFromInline
         let type: ObjectIdentifier
 
@@ -84,8 +83,7 @@ extension Machine.Capture {
         }
 
         /// Reads the stored value, checking the type matches.
-        @usableFromInline
-        func read<T>(_: T.Type) -> T {
+        public func read<T>(_: T.Type) -> T {
             #if DEBUG
             precondition(
                 type == ObjectIdentifier(T.self),

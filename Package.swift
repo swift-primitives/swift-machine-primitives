@@ -17,47 +17,175 @@ let package = Package(
             targets: ["Machine Primitives"]
         ),
         .library(
-            name: "Machine Primitives Conveniences",
-            targets: ["Machine Primitives Conveniences"]
+            name: "Machine Primitives Core",
+            targets: ["Machine Primitives Core"]
+        ),
+        .library(
+            name: "Machine Value Primitives",
+            targets: ["Machine Value Primitives"]
+        ),
+        .library(
+            name: "Machine Capture Primitives",
+            targets: ["Machine Capture Primitives"]
+        ),
+        .library(
+            name: "Machine Transform Primitives",
+            targets: ["Machine Transform Primitives"]
+        ),
+        .library(
+            name: "Machine Combine Primitives",
+            targets: ["Machine Combine Primitives"]
+        ),
+        .library(
+            name: "Machine Next Primitives",
+            targets: ["Machine Next Primitives"]
+        ),
+        .library(
+            name: "Machine Finalize Primitives",
+            targets: ["Machine Finalize Primitives"]
+        ),
+        .library(
+            name: "Machine Frame Primitives",
+            targets: ["Machine Frame Primitives"]
+        ),
+        .library(
+            name: "Machine Node Primitives",
+            targets: ["Machine Node Primitives"]
+        ),
+        .library(
+            name: "Machine Program Primitives",
+            targets: ["Machine Program Primitives"]
+        ),
+        .library(
+            name: "Machine Convenience Primitives",
+            targets: ["Machine Convenience Primitives"]
         ),
     ],
     dependencies: [
         .package(path: "../swift-handle-primitives"),
-        .package(path: "../swift-identity-primitives"),
-        .package(path: "../swift-index-primitives"),
-        .package(path: "../swift-bit-primitives"),
         .package(path: "../swift-graph-primitives"),
     ],
     targets: [
+        // MARK: - Core
+
+        .target(
+            name: "Machine Primitives Core"
+        ),
+
+        // MARK: - Value & Capture
+
+        .target(
+            name: "Machine Value Primitives",
+            dependencies: [
+                "Machine Primitives Core",
+                .product(name: "Handle Primitives", package: "swift-handle-primitives"),
+            ]
+        ),
+        .target(
+            name: "Machine Capture Primitives",
+            dependencies: [
+                "Machine Primitives Core",
+            ]
+        ),
+
+        // MARK: - Carriers
+
+        .target(
+            name: "Machine Transform Primitives",
+            dependencies: [
+                "Machine Value Primitives",
+                "Machine Capture Primitives",
+            ]
+        ),
+        .target(
+            name: "Machine Combine Primitives",
+            dependencies: [
+                "Machine Value Primitives",
+                "Machine Capture Primitives",
+            ]
+        ),
+        .target(
+            name: "Machine Next Primitives",
+            dependencies: [
+                "Machine Value Primitives",
+                "Machine Capture Primitives",
+            ]
+        ),
+        .target(
+            name: "Machine Finalize Primitives",
+            dependencies: [
+                "Machine Value Primitives",
+                "Machine Capture Primitives",
+            ]
+        ),
+
+        // MARK: - Composition
+
+        .target(
+            name: "Machine Frame Primitives",
+            dependencies: [
+                "Machine Value Primitives",
+                "Machine Transform Primitives",
+                "Machine Combine Primitives",
+                "Machine Next Primitives",
+                "Machine Finalize Primitives",
+            ]
+        ),
+        .target(
+            name: "Machine Node Primitives",
+            dependencies: [
+                "Machine Value Primitives",
+                "Machine Transform Primitives",
+                "Machine Combine Primitives",
+                "Machine Next Primitives",
+                "Machine Finalize Primitives",
+                .product(name: "Graph Primitives Core", package: "swift-graph-primitives"),
+            ]
+        ),
+        .target(
+            name: "Machine Program Primitives",
+            dependencies: [
+                "Machine Node Primitives",
+                "Machine Capture Primitives",
+                .product(name: "Graph Primitives Core", package: "swift-graph-primitives"),
+            ]
+        ),
+
+        // MARK: - Convenience
+
+        .target(
+            name: "Machine Convenience Primitives",
+            dependencies: [
+                "Machine Program Primitives",
+            ]
+        ),
+
+        // MARK: - Umbrella
+
         .target(
             name: "Machine Primitives",
             dependencies: [
-                .product(name: "Handle Primitives", package: "swift-handle-primitives"),
-                .product(name: "Identity Primitives", package: "swift-identity-primitives"),
-                .product(name: "Index Primitives", package: "swift-index-primitives"),
-                .product(name: "Bit Primitives", package: "swift-bit-primitives"),
+                "Machine Primitives Core",
+                "Machine Value Primitives",
+                "Machine Capture Primitives",
+                "Machine Transform Primitives",
+                "Machine Combine Primitives",
+                "Machine Next Primitives",
+                "Machine Finalize Primitives",
+                "Machine Frame Primitives",
+                "Machine Node Primitives",
+                "Machine Program Primitives",
+                "Machine Convenience Primitives",
                 .product(name: "Graph Primitives", package: "swift-graph-primitives"),
-            ],
-            swiftSettings: [
-                .strictMemorySafety()
             ]
         ),
-        .target(
-            name: "Machine Primitives Conveniences",
-            dependencies: [
-                "Machine Primitives",
-            ],
-            swiftSettings: [
-                .strictMemorySafety()
-            ]
-        ),
+
+        // MARK: - Tests
+
         .testTarget(
             name: "Machine Primitives Tests",
             dependencies: [
                 "Machine Primitives",
-            ],
-            swiftSettings: [
-                .strictMemorySafety()
             ]
         ),
     ],

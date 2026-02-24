@@ -12,8 +12,7 @@ extension Machine.Capture {
     /// - `Slot` is `@unchecked Sendable` with construction-enforced invariants
     /// - The slots array is immutable (`let`)
     public struct Frozen<Mode> {
-        @usableFromInline
-        let slots: [Slot]
+        public let slots: [Slot]
 
         @usableFromInline
         init(__slots: [Slot]) {

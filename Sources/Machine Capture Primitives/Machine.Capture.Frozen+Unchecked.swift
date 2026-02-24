@@ -11,8 +11,7 @@ extension Machine.Capture.Frozen where Mode == Machine.Capture.Mode.Unchecked {
     }
 
     /// Accesses a captured value by raw ID with explicit type.
-    @usableFromInline
-    func withRaw<Value, R>(
+    public func withRaw<Value, R>(
         _ raw: Machine.Capture.RawID,
         as _: Value.Type,
         _ body: (borrowing Value) -> R
@@ -23,8 +22,7 @@ extension Machine.Capture.Frozen where Mode == Machine.Capture.Mode.Unchecked {
     }
 
     /// Accesses a captured value by raw ID with typed throws.
-    @usableFromInline
-    func withRawThrowing<Value, R, E: Error>(
+    public func withRawThrowing<Value, R, E: Error>(
         _ raw: Machine.Capture.RawID,
         as _: Value.Type,
         _ body: (borrowing Value) throws(E) -> R

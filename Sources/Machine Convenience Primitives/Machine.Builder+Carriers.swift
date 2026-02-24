@@ -1,4 +1,4 @@
-public import Machine_Primitives
+public import Machine_Program_Primitives
 
 // MARK: - Builder Carrier Factory Conveniences (Reference Mode)
 

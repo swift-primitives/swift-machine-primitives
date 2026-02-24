@@ -1,6 +1,6 @@
 extension Machine.Capture {
     public struct ID<Value>: Hashable, Sendable {
-        @usableFromInline let raw: RawID
+        public let raw: RawID
 
         @usableFromInline
         init(_ raw: RawID) {
