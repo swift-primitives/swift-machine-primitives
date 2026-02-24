@@ -183,10 +183,36 @@ let package = Package(
         // MARK: - Tests
 
         .testTarget(
-            name: "Machine Primitives Tests",
-            dependencies: [
-                "Machine Primitives",
-            ]
+            name: "Machine Value Primitives Tests",
+            dependencies: ["Machine Primitives"]
+        ),
+        .testTarget(
+            name: "Machine Combine Primitives Tests",
+            dependencies: ["Machine Primitives"]
+        ),
+        .testTarget(
+            name: "Machine Transform Primitives Tests",
+            dependencies: ["Machine Primitives"]
+        ),
+        .testTarget(
+            name: "Machine Next Primitives Tests",
+            dependencies: ["Machine Primitives"]
+        ),
+        .testTarget(
+            name: "Machine Finalize Primitives Tests",
+            dependencies: ["Machine Primitives"]
+        ),
+        .testTarget(
+            name: "Machine Frame Primitives Tests",
+            dependencies: ["Machine Primitives"]
+        ),
+        .testTarget(
+            name: "Machine Node Primitives Tests",
+            dependencies: ["Machine Primitives"]
+        ),
+        .testTarget(
+            name: "Machine Program Primitives Tests",
+            dependencies: ["Machine Primitives"]
         ),
     ],
     swiftLanguageModes: [.v6]
