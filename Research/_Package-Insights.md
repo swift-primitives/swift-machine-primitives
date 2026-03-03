@@ -9,11 +9,6 @@ applies_to: [swift-machine-primitives]
 normative: false
 ---
 -->
-
-@Metadata {
-    @TitleHeading("Machine Primitives")
-}
-
 Design decisions, implementation patterns, and lessons learned specific to this package.
 
 ## Overview
@@ -256,8 +251,6 @@ This pattern works when:
 
 ---
 
-## Topics
+## Related
 
-### Related Documents
-
-- <doc:Machine>
+- Machine
