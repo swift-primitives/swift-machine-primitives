@@ -6,7 +6,7 @@ document_type: supplementary_analysis
 version: 1.1.0
 date: 2026-01-19
 author: Swift Institute
-status: final
+status: COMPLETE
 accompanies: "Analysis - Closure-Free Parser Combinators.md"
 revision_notes: Added Section 10 (Borrowed Output Discipline) with full design space analysis
 ---
