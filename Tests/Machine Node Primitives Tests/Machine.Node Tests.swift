@@ -50,7 +50,7 @@ struct MachineNodeTests {
         let node: TestNode = .pure(value)
 
         if case .pure(let v) = node {
-            #expect(v.take(Int.self) == 42)
+            #expect(v[as: Int.self] == 42)
         } else {
             Issue.record("Expected pure case")
         }
@@ -70,7 +70,7 @@ struct MachineNodeTests {
             #expect(child == childId)
             // Verify transform works
             let result = t.apply(using: frozen, Value.make(21))
-            #expect(result.take(Int.self) == 42)
+            #expect(result[as: Int.self] == 42)
         } else {
             Issue.record("Expected map case")
         }
@@ -93,7 +93,7 @@ struct MachineNodeTests {
             #expect(child == childId)
             // Verify transform works
             let result = try t.apply(using: frozen, Value.make(10))
-            #expect(result.take(Int.self) == 10)
+            #expect(result[as: Int.self] == 10)
         } else {
             Issue.record("Expected tryMap case")
         }
@@ -133,7 +133,7 @@ struct MachineNodeTests {
             #expect(a == aId)
             #expect(b == bId)
             let result = c.combine(using: frozen, Value.make(10), Value.make(20))
-            #expect(result.take(Int.self) == 30)
+            #expect(result[as: Int.self] == 30)
         } else {
             Issue.record("Expected sequence case")
         }
@@ -176,7 +176,7 @@ struct MachineNodeTests {
             // Verify finalize works
             let values = [Value.make(1), Value.make(2)]
             let result = f.finalize(using: frozen, values)
-            #expect(result.take([Int].self) == [1, 2])
+            #expect(result[as: [Int].self] == [1, 2])
         } else {
             Issue.record("Expected many case")
         }
@@ -197,9 +197,9 @@ struct MachineNodeTests {
             #expect(child == childId)
             // Verify wrapSome works
             let wrapped = wrap.apply(using: frozen, Value.make(42))
-            #expect(wrapped.take(Int?.self) == 42)
+            #expect(wrapped[as: Int?.self] == 42)
             // Verify noneValue
-            #expect(none.take(Int?.self)! == nil)
+            #expect(none[as: Int?.self] == nil)
         } else {
             Issue.record("Expected optional case")
         }

@@ -74,7 +74,7 @@ struct MachineProgramTests {
         let program = builder.build()
 
         if case .pure(let value) = program[id1] {
-            #expect(value.take(Int.self) == 42)
+            #expect(value[as: Int.self] == 42)
         } else {
             Issue.record("Expected pure node at id1")
         }
@@ -256,7 +256,7 @@ struct MachineProgramTests {
 
         if case .optional(let childId, _, let none) = program[optId] {
             #expect(childId == child)
-            #expect(none.take(Int?.self)! == nil)
+            #expect(none[as: Int?.self] == nil)
         } else {
             Issue.record("Expected optional node")
         }

@@ -14,7 +14,7 @@ struct MachineValueArenaTests {
         let value = Value.make(42)
         let handle = arena.allocate(value)
         let read = arena.read(handle)
-        #expect(read.take(Int.self) == 42)
+        #expect(read[as: Int.self] == 42)
     }
 
     @Test("init creates arena with custom capacity")
@@ -23,7 +23,7 @@ struct MachineValueArenaTests {
         let value = Value.make("test")
         let handle = arena.allocate(value)
         let read = arena.read(handle)
-        #expect(read.take(String.self) == "test")
+        #expect(read[as: String.self] == "test")
     }
 
     @Test("allocate returns unique handles")
@@ -56,7 +56,7 @@ struct MachineValueArenaTests {
         var arena = Arena()
         let handle = arena.allocate(Value.make(123))
         let value = arena.read(handle)
-        #expect(value.take(Int.self) == 123)
+        #expect(value[as: Int.self] == 123)
     }
 
     @Test("read does not remove value")
@@ -67,8 +67,8 @@ struct MachineValueArenaTests {
         let value1 = arena.read(handle)
         let value2 = arena.read(handle)
 
-        #expect(value1.take(Int.self) == 42)
-        #expect(value2.take(Int.self) == 42)
+        #expect(value1[as: Int.self] == 42)
+        #expect(value2[as: Int.self] == 42)
     }
 
     @Test("release returns and removes value")
@@ -77,7 +77,7 @@ struct MachineValueArenaTests {
         let handle = arena.allocate(Value.make(99))
 
         let value = arena.release(handle)
-        #expect(value.take(Int.self) == 99)
+        #expect(value[as: Int.self] == 99)
     }
 
     @Test("multiple values stored independently")
@@ -87,9 +87,9 @@ struct MachineValueArenaTests {
         let h2 = arena.allocate(Value.make("second"))
         let h3 = arena.allocate(Value.make("third"))
 
-        #expect(arena.read(h1).take(String.self) == "first")
-        #expect(arena.read(h2).take(String.self) == "second")
-        #expect(arena.read(h3).take(String.self) == "third")
+        #expect(arena.read(h1)[as: String.self] == "first")
+        #expect(arena.read(h2)[as: String.self] == "second")
+        #expect(arena.read(h3)[as: String.self] == "third")
     }
 
     @Test("reset clears all values")
@@ -104,7 +104,7 @@ struct MachineValueArenaTests {
         // After reset, allocating should reuse slots from beginning
         let handle = arena.allocate(Value.make(100))
         let value = arena.read(handle)
-        #expect(value.take(Int.self) == 100)
+        #expect(value[as: Int.self] == 100)
     }
 
     @Test("handles are equatable")
@@ -141,10 +141,10 @@ struct MachineValueArenaTests {
         _ = arena.release(h1)
 
         // h2 should still be valid
-        #expect(arena.read(h2).take(String.self) == "b")
+        #expect(arena.read(h2)[as: String.self] == "b")
 
         // New allocation should still work
         let h3 = arena.allocate(Value.make("c"))
-        #expect(arena.read(h3).take(String.self) == "c")
+        #expect(arena.read(h3)[as: String.self] == "c")
     }
 }

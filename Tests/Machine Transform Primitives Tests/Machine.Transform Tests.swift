@@ -18,7 +18,7 @@ struct MachineTransformErasedTests {
 
         let input = Value.make(21)
         let output = transform.apply(using: frozen, input)
-        #expect(output.take(Int.self) == 42)
+        #expect(output[as: Int.self] == 42)
     }
 
     @Test("apply changes type")
@@ -30,7 +30,7 @@ struct MachineTransformErasedTests {
 
         let input = Value.make(123)
         let output = transform.apply(using: frozen, input)
-        #expect(output.take(String.self) == "123")
+        #expect(output[as: String.self] == "123")
     }
 
     @Test("identity transform")
@@ -42,7 +42,7 @@ struct MachineTransformErasedTests {
 
         let input = Value.make("unchanged")
         let output = transform.apply(using: frozen, input)
-        #expect(output.take(String.self) == "unchanged")
+        #expect(output[as: String.self] == "unchanged")
     }
 
     @Test("transform with closure capturing context")
@@ -55,7 +55,7 @@ struct MachineTransformErasedTests {
 
         let input = Value.make(5)
         let output = transform.apply(using: frozen, input)
-        #expect(output.take(Int.self) == 50)
+        #expect(output[as: Int.self] == 50)
     }
 
     @Test("transform struct to different struct")
@@ -73,7 +73,7 @@ struct MachineTransformErasedTests {
         let input = Value.make(Input(value: 7))
         let output = transform.apply(using: frozen, input)
 
-        #expect(output.take(Output.self)?.doubled == 14)
+        #expect(output[as: Output.self].doubled == 14)
     }
 
     @Test("transform to optional")
@@ -87,7 +87,7 @@ struct MachineTransformErasedTests {
 
         let input = Value.make(5)
         let output = transform.apply(using: frozen, input)
-        #expect(output.take(Int?.self) == 5)
+        #expect(output[as: Int?.self] == 5)
     }
 
     @Test("transform array")
@@ -99,7 +99,7 @@ struct MachineTransformErasedTests {
 
         let input = Value.make([1, 2, 3])
         let output = transform.apply(using: frozen, input)
-        #expect(output.take([Int].self) == [2, 4, 6])
+        #expect(output[as: [Int].self] == [2, 4, 6])
     }
 }
 
@@ -129,7 +129,7 @@ struct MachineTransformThrowingTests {
 
         let input = Value.make(21)
         let output = try transform.apply(using: frozen, input)
-        #expect(output.take(Int.self) == 42)
+        #expect(output[as: Int.self] == 42)
     }
 
     @Test("apply throws for invalid input")
@@ -161,7 +161,7 @@ struct MachineTransformThrowingTests {
 
         let input = Value.make("42")
         let output = try transform.apply(using: frozen, input)
-        #expect(output.take(Int.self) == 42)
+        #expect(output[as: Int.self] == 42)
     }
 
     @Test("transform with different error types")
@@ -179,7 +179,7 @@ struct MachineTransformThrowingTests {
 
         let input = Value.make("99")
         let output = try transform.apply(using: frozen, input)
-        #expect(output.take(Int.self) == 99)
+        #expect(output[as: Int.self] == 99)
     }
 
     @Test("transform preserves value on success")
@@ -193,7 +193,7 @@ struct MachineTransformThrowingTests {
 
         let input = Value.make("hello")
         let output = try transform.apply(using: frozen, input)
-        #expect(output.take(String.self) == "HELLO")
+        #expect(output[as: String.self] == "HELLO")
     }
 
     @Test("throwing transform with closure capture")
@@ -209,6 +209,6 @@ struct MachineTransformThrowingTests {
 
         let input = Value.make(50)
         let output = try transform.apply(using: frozen, input)
-        #expect(output.take(Int.self) == 50)
+        #expect(output[as: Int.self] == 50)
     }
 }

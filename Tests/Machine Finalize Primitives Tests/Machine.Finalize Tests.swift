@@ -20,7 +20,7 @@ struct MachineFinalizeArrayTests {
             Value.make(3)
         ]
         let result = finalize.finalize(using: frozen, values)
-        #expect(result.take([Int].self) == [1, 2, 3])
+        #expect(result[as: [Int].self] == [1, 2, 3])
     }
 
     @Test("finalize with empty array")
@@ -31,7 +31,7 @@ struct MachineFinalizeArrayTests {
 
         let values: [Value] = []
         let result = finalize.finalize(using: frozen, values)
-        #expect(result.take([String].self) == [])
+        #expect(result[as: [String].self] == [])
     }
 
     @Test("finalize with single element")
@@ -42,7 +42,7 @@ struct MachineFinalizeArrayTests {
 
         let values = [Value.make(3.14)]
         let result = finalize.finalize(using: frozen, values)
-        #expect(result.take([Double].self) == [3.14])
+        #expect(result[as: [Double].self] == [3.14])
     }
 
     @Test("finalize with string values")
@@ -56,7 +56,7 @@ struct MachineFinalizeArrayTests {
             Value.make("world")
         ]
         let result = finalize.finalize(using: frozen, values)
-        #expect(result.take([String].self) == ["hello", "world"])
+        #expect(result[as: [String].self] == ["hello", "world"])
     }
 
     @Test("finalize with custom struct")
@@ -74,7 +74,7 @@ struct MachineFinalizeArrayTests {
         ]
         let result = finalize.finalize(using: frozen, values)
 
-        let items = result.take([Item].self)
+        let items = result[as: [Item].self]
         #expect(items == [Item(id: 1), Item(id: 2), Item(id: 3)])
     }
 
@@ -92,7 +92,7 @@ struct MachineFinalizeArrayTests {
             Value.make(2)
         ]
         let result = finalize.finalize(using: frozen, values)
-        #expect(result.take([Int].self) == [5, 3, 1, 4, 2])
+        #expect(result[as: [Int].self] == [5, 3, 1, 4, 2])
     }
 
     @Test("finalize with optional elements")
@@ -108,10 +108,10 @@ struct MachineFinalizeArrayTests {
         ]
         let result = finalize.finalize(using: frozen, values)
 
-        let array = result.take([Int?].self)
-        #expect(array?[0] == 1)
-        #expect(array?[1] == nil)
-        #expect(array?[2] == 3)
+        let array = result[as: [Int?].self]
+        #expect(array[0] == 1)
+        #expect(array[1] == nil)
+        #expect(array[2] == 3)
     }
 
     @Test("finalize with tuple elements")
@@ -126,12 +126,12 @@ struct MachineFinalizeArrayTests {
         ]
         let result = finalize.finalize(using: frozen, values)
 
-        let array = result.take([(Int, String)].self)
-        #expect(array?.count == 2)
-        #expect(array?[0].0 == 1)
-        #expect(array?[0].1 == "one")
-        #expect(array?[1].0 == 2)
-        #expect(array?[1].1 == "two")
+        let array = result[as: [(Int, String)].self]
+        #expect(array.count == 2)
+        #expect(array[0].0 == 1)
+        #expect(array[0].1 == "one")
+        #expect(array[1].0 == 2)
+        #expect(array[1].1 == "two")
     }
 
     @Test("finalize large array")
@@ -143,9 +143,9 @@ struct MachineFinalizeArrayTests {
         let values = (0..<100).map { Value.make($0) }
         let result = finalize.finalize(using: frozen, values)
 
-        let array = result.take([Int].self)
-        #expect(array?.count == 100)
-        #expect(array?[0] == 0)
-        #expect(array?[99] == 99)
+        let array = result[as: [Int].self]
+        #expect(array.count == 100)
+        #expect(array[0] == 0)
+        #expect(array[99] == 99)
     }
 }

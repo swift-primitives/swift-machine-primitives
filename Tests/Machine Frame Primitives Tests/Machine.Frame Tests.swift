@@ -23,7 +23,7 @@ struct MachineFrameTests {
 
         if case .map(let t) = frame {
             let result = t.apply(using: frozen, Value.make(21))
-            #expect(result.take(Int.self) == 42)
+            #expect(result[as: Int.self] == 42)
         } else {
             Issue.record("Expected map frame")
         }
@@ -43,7 +43,7 @@ struct MachineFrameTests {
 
         if case .tryMap(let t) = frame {
             let result = try t.apply(using: frozen, Value.make(10))
-            #expect(result.take(Int.self) == 10)
+            #expect(result[as: Int.self] == 10)
         } else {
             Issue.record("Expected tryMap frame")
         }
@@ -80,7 +80,7 @@ struct MachineFrameTests {
             if case .second(let b, let c) = state {
                 #expect(b == 5)
                 let result = c.combine(using: frozen, Value.make(10), Value.make(20))
-                #expect(result.take(Int.self) == 30)
+                #expect(result[as: Int.self] == 30)
             } else {
                 Issue.record("Expected second state")
             }
@@ -127,7 +127,7 @@ struct MachineFrameTests {
             #expect(handles.count == 2)
             let values = handles.map { arena.read($0) }
             let result = f.finalize(using: frozen, values)
-            #expect(result.take([Int].self) == [1, 2])
+            #expect(result[as: [Int].self] == [1, 2])
         } else {
             Issue.record("Expected many frame")
         }
@@ -151,8 +151,8 @@ struct MachineFrameTests {
         if case .optional(let cp, let wrap, let none) = frame {
             #expect(cp == 50)
             let wrapped = wrap.apply(using: frozen, Value.make(42))
-            #expect(wrapped.take(Int?.self) == 42)
-            #expect(arena.read(none).take(Int?.self)! == nil)
+            #expect(wrapped[as: Int?.self] == 42)
+            #expect(arena.read(none)[as: Int?.self] == nil)
         } else {
             Issue.record("Expected optional frame")
         }
@@ -190,7 +190,7 @@ struct MachineFrameSequenceTests {
         if case .second(let b, let c) = seq {
             #expect(b == 10)
             let result = c.combine(using: frozen, Value.make("Hello"), Value.make("World"))
-            #expect(result.take(String.self) == "HelloWorld")
+            #expect(result[as: String.self] == "HelloWorld")
         } else {
             Issue.record("Expected second case")
         }
@@ -214,7 +214,7 @@ struct MachineFrameSequenceTests {
             #expect(handle == firstHandle)
             let first = arena.read(handle)
             let result = c.combine(using: frozen, first, Value.make(5))
-            #expect(result.take(Int.self) == 500)
+            #expect(result[as: Int.self] == 500)
         } else {
             Issue.record("Expected combine case")
         }

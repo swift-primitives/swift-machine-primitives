@@ -32,7 +32,7 @@ extension Machine.Next.Erased where Mode == Machine.Capture.Mode.Reference {
         self.capture = raw
         self._next = { captures, value in
             captures.withRaw(raw, as: (@Sendable (In) -> NodeID).self) { nextFn in
-                nextFn(value.read(In.self))
+                nextFn(value[as: In.self])
             }
         }
     }
@@ -47,7 +47,7 @@ extension Machine.Next.Erased where Mode == Machine.Capture.Mode.Unchecked {
         self.capture = raw
         self._next = { captures, value in
             captures.withRaw(raw, as: ((In) -> NodeID).self) { nextFn in
-                nextFn(value.read(In.self))
+                nextFn(value[as: In.self])
             }
         }
     }

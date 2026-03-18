@@ -3,13 +3,14 @@ extension Machine {
     ///
     /// `Value` stores any type-erased value during machine execution, preserving
     /// the original type information via `ObjectIdentifier` for safe extraction.
+    /// Supports both `Copyable` and `~Copyable` payloads.
     ///
     /// ## No Existentials
     ///
     /// This type uses table-based storage to avoid existential types (`AnyObject`,
     /// `Any`, `as?` casts). The internal `_Storage` class holds an opaque pointer
-    /// and a `_Table` with type-specialized operations. Extraction loads directly
-    /// from the pointer after verifying the type via `ObjectIdentifier`.
+    /// and a `_Table` with type-specialized operations. Access is via `_read`
+    /// subscript (borrow) or `~Escapable` `Ref` (lifetime-dependent borrow).
     ///
     /// ## Sendable
     ///
@@ -21,8 +22,8 @@ extension Machine {
     /// ## Construction
     ///
     /// The only public construction paths are:
-    /// - `Value<Mode.Reference>.make<T: Sendable>(_:)` - requires Sendable payload
-    /// - `Value<Mode.Unchecked>.make<T>(_:)` - no Sendable requirement
+    /// - `Value<Mode.Reference>.make<T: Sendable & ~Copyable>(_:)` - requires Sendable payload
+    /// - `Value<Mode.Unchecked>.make<T: ~Copyable>(_:)` - no Sendable requirement
     @safe
     public struct Value<Mode> {
         @usableFromInline
@@ -79,7 +80,7 @@ extension Machine {
             let destroy: @Sendable (UnsafeMutableRawPointer) -> Void
 
             @usableFromInline
-            init<T>(_: T.Type) {
+            init<T: ~Copyable>(_: T.Type) {
                 self.destroy = { raw in
                     raw.assumingMemoryBound(to: T.self).deinitialize(count: 1)
                     raw.deallocate()
@@ -100,33 +101,71 @@ extension Machine {
         ///
         /// - Precondition: `T` must match the type used at construction.
         @usableFromInline
-        func _project<T>(_: T.Type) -> UnsafePointer<T> {
-            UnsafePointer(storage.payload.assumingMemoryBound(to: T.self))
+        func _project<T: ~Copyable>(_: T.Type) -> UnsafePointer<T> {
+            unsafe UnsafePointer(storage.payload.assumingMemoryBound(to: T.self))
         }
 
-        /// Attempts to extract the value as the specified type.
+        // MARK: - Borrow Access
+
+        /// Borrow access to the stored value via `_read`.
         ///
-        /// Returns `nil` if the type does not match.
+        /// Yields a borrow of the payload scoped to the accessor call.
+        /// Supports `~Copyable` payloads — no copy is made.
+        ///
+        ///     V._render(value[as: V.self], context: &ctx)
+        ///
+        /// - Precondition: `T` must match the type used at construction.
         @inlinable
-        public func take<T>(_ expectedType: T.Type) -> T? {
-            guard type == ObjectIdentifier(T.self) else {
-                return nil
+        public subscript<T: ~Copyable>(as type: T.Type) -> T {
+            _read {
+                precondition(
+                    self.type == ObjectIdentifier(T.self),
+                    "Machine.Value type mismatch: expected \(T.self), got type with id \(self.type)"
+                )
+                yield unsafe _project(type).pointee
             }
-            return _project(T.self).pointee
         }
 
-        /// Precondition-checked type projection.
+        // MARK: - ~Escapable Ref
+
+        /// A `~Escapable` reference to a stored value.
         ///
-        /// Reads the stored value after verifying the type matches via `ObjectIdentifier`.
-        /// Named to align with `Capture.Slot.read(_:)` which performs the identical operation.
+        /// Carries a lifetime dependency back to the `Value`, ensuring the
+        /// reference cannot outlive its storage. Access the payload via
+        /// the `value` property (`_read` accessor).
+        @safe
+        public struct Ref<T: ~Copyable>: ~Copyable, ~Escapable {
+            @usableFromInline
+            let _pointer: UnsafePointer<T>
+
+            @usableFromInline
+            init(_pointer: UnsafePointer<T>) {
+                self._pointer = _pointer
+            }
+
+            /// Borrow access to the referenced value.
+            public var value: T {
+                _read { yield unsafe _pointer.pointee }
+            }
+        }
+
+        /// Returns a `~Escapable` reference to the stored value.
         ///
-        /// - Precondition: The value must have been created with the same type `T`.
-        public func read<T>(_ expectedType: T.Type) -> T {
+        /// The returned `Ref` carries a lifetime dependency on `self`.
+        /// No closure needed — use `ref.value` to borrow.
+        ///
+        /// Uses `_overrideLifetime` (the "returning model") to bridge
+        /// from the raw pointer to the lifetime system.
+        ///
+        /// - Precondition: `T` must match the type used at construction.
+        @_lifetime(borrow self)
+        public func borrow<T: ~Copyable>(as type: T.Type) -> Ref<T> {
             precondition(
-                type == ObjectIdentifier(T.self),
-                "Machine.Value type mismatch: expected \(T.self), got type with id \(type)"
+                self.type == ObjectIdentifier(T.self),
+                "Machine.Value type mismatch: expected \(T.self), got type with id \(self.type)"
             )
-            return _project(T.self).pointee
+            let ref = unsafe Ref(_pointer: _project(type))
+            return unsafe _overrideLifetime(ref, borrowing: self)
         }
     }
 }
@@ -138,7 +177,7 @@ extension Machine.Value where Mode == Machine.Capture.Mode.Reference {
     ///
     /// - Precondition: `self` was created from a value of type `In`.
     public func apply<In, Out: Sendable>(_ transform: (In) -> Out) -> Machine.Value<Mode> {
-        .make(transform(read(In.self)))
+        .make(transform(self[as: In.self]))
     }
 
     /// Applies a typed throwing function to this erased value.
@@ -147,7 +186,7 @@ extension Machine.Value where Mode == Machine.Capture.Mode.Reference {
     public func apply<In, Out: Sendable, E: Error>(
         _ transform: (In) throws(E) -> Out
     ) throws(E) -> Machine.Value<Mode> {
-        .make(try transform(read(In.self)))
+        .make(try transform(self[as: In.self]))
     }
 
     /// Combines this value with another using a typed binary function.
@@ -157,7 +196,7 @@ extension Machine.Value where Mode == Machine.Capture.Mode.Reference {
         _ other: Machine.Value<Mode>,
         using combineFn: (A, B) -> Out
     ) -> Machine.Value<Mode> {
-        .make(combineFn(read(A.self), other.read(B.self)))
+        .make(combineFn(self[as: A.self], other[as: B.self]))
     }
 }
 
@@ -168,7 +207,7 @@ extension Machine.Value where Mode == Machine.Capture.Mode.Unchecked {
     ///
     /// - Precondition: `self` was created from a value of type `In`.
     public func apply<In, Out>(_ transform: (In) -> Out) -> Machine.Value<Mode> {
-        .make(transform(read(In.self)))
+        .make(transform(self[as: In.self]))
     }
 
     /// Applies a typed throwing function to this erased value.
@@ -177,7 +216,7 @@ extension Machine.Value where Mode == Machine.Capture.Mode.Unchecked {
     public func apply<In, Out, E: Error>(
         _ transform: (In) throws(E) -> Out
     ) throws(E) -> Machine.Value<Mode> {
-        .make(try transform(read(In.self)))
+        .make(try transform(self[as: In.self]))
     }
 
     /// Combines this value with another using a typed binary function.
@@ -187,7 +226,7 @@ extension Machine.Value where Mode == Machine.Capture.Mode.Unchecked {
         _ other: Machine.Value<Mode>,
         using combineFn: (A, B) -> Out
     ) -> Machine.Value<Mode> {
-        .make(combineFn(read(A.self), other.read(B.self)))
+        .make(combineFn(self[as: A.self], other[as: B.self]))
     }
 }
 
@@ -200,12 +239,12 @@ extension Machine.Value where Mode == Machine.Capture.Mode.Reference {
     /// The Sendable constraint ensures all values in Reference mode are safe
     /// to share across isolation domains.
     @inlinable
-    public static func make<T: Sendable>(_ value: T) -> Machine.Value<Mode> {
+    public static func make<T: Sendable & ~Copyable>(_ value: consuming T) -> Machine.Value<Mode> {
         let payload = UnsafeMutablePointer<T>.allocate(capacity: 1)
         payload.initialize(to: value)
 
         let table = _Table(T.self)
-        let storage = _Storage(
+        let storage = unsafe _Storage(
             payload: UnsafeMutableRawPointer(payload),
             table: table
         )
@@ -225,12 +264,12 @@ extension Machine.Value where Mode == Machine.Capture.Mode.Unchecked {
     /// This is the only construction path for `Value<Mode.Unchecked>`.
     /// No Sendable constraint—use this mode when Sendable is not required.
     @inlinable
-    public static func make<T>(_ value: T) -> Machine.Value<Mode> {
+    public static func make<T: ~Copyable>(_ value: consuming T) -> Machine.Value<Mode> {
         let payload = UnsafeMutablePointer<T>.allocate(capacity: 1)
         payload.initialize(to: value)
 
         let table = _Table(T.self)
-        let storage = _Storage(
+        let storage = unsafe _Storage(
             payload: UnsafeMutableRawPointer(payload),
             table: table
         )

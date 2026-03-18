@@ -18,7 +18,7 @@ struct MachineCombineErasedTests {
         let a = Value.make(10)
         let b = Value.make(20)
         let result = combine.combine(using: frozen, a, b)
-        #expect(result.take(Int.self) == 30)
+        #expect(result[as: Int.self] == 30)
     }
 
     @Test("combine different types into tuple")
@@ -32,9 +32,9 @@ struct MachineCombineErasedTests {
         let b = Value.make("hello")
         let result = combine.combine(using: frozen, a, b)
 
-        let tuple = result.take((Int, String).self)
-        #expect(tuple?.0 == 42)
-        #expect(tuple?.1 == "hello")
+        let tuple = result[as: (Int, String).self]
+        #expect(tuple.0 == 42)
+        #expect(tuple.1 == "hello")
     }
 
     @Test("combine strings with concatenation")
@@ -47,7 +47,7 @@ struct MachineCombineErasedTests {
         let a = Value.make("Hello, ")
         let b = Value.make("World!")
         let result = combine.combine(using: frozen, a, b)
-        #expect(result.take(String.self) == "Hello, World!")
+        #expect(result[as: String.self] == "Hello, World!")
     }
 
     @Test("combine into custom struct")
@@ -63,9 +63,9 @@ struct MachineCombineErasedTests {
         let y = Value.make(20)
         let result = combine.combine(using: frozen, x, y)
 
-        let point = result.take(Point.self)
-        #expect(point?.x == 10)
-        #expect(point?.y == 20)
+        let point = result[as: Point.self]
+        #expect(point.x == 10)
+        #expect(point.y == 20)
     }
 
     @Test("combine arrays into combined array")
@@ -78,7 +78,7 @@ struct MachineCombineErasedTests {
         let a = Value.make([1, 2, 3])
         let b = Value.make([4, 5, 6])
         let result = combine.combine(using: frozen, a, b)
-        #expect(result.take([Int].self) == [1, 2, 3, 4, 5, 6])
+        #expect(result[as: [Int].self] == [1, 2, 3, 4, 5, 6])
     }
 
     @Test("combine discarding first value")
@@ -91,7 +91,7 @@ struct MachineCombineErasedTests {
         let a = Value.make(42)
         let b = Value.make("keep me")
         let result = combine.combine(using: frozen, a, b)
-        #expect(result.take(String.self) == "keep me")
+        #expect(result[as: String.self] == "keep me")
     }
 
     @Test("combine discarding second value")
@@ -104,7 +104,7 @@ struct MachineCombineErasedTests {
         let a = Value.make("keep me")
         let b = Value.make(42)
         let result = combine.combine(using: frozen, a, b)
-        #expect(result.take(String.self) == "keep me")
+        #expect(result[as: String.self] == "keep me")
     }
 
     @Test("combine with closure capture")
@@ -120,7 +120,7 @@ struct MachineCombineErasedTests {
         let a = Value.make("left")
         let b = Value.make("right")
         let result = combine.combine(using: frozen, a, b)
-        #expect(result.take(String.self) == "left-right")
+        #expect(result[as: String.self] == "left-right")
     }
 
     @Test("combine into optional")
@@ -136,6 +136,6 @@ struct MachineCombineErasedTests {
         let a = Value.make(5)
         let b = Value.make(10)
         let result = combine.combine(using: frozen, a, b)
-        #expect(result.take(Int?.self) == 15)
+        #expect(result[as: Int?.self] == 15)
     }
 }
