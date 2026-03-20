@@ -60,6 +60,10 @@ let package = Package(
             name: "Machine Convenience Primitives",
             targets: ["Machine Convenience Primitives"]
         ),
+        .library(
+            name: "Machine Primitives Test Support",
+            targets: ["Machine Primitives Test Support"]
+        ),
     ],
     dependencies: [
         .package(path: "../swift-handle-primitives"),
@@ -213,6 +217,16 @@ let package = Package(
         .testTarget(
             name: "Machine Program Primitives Tests",
             dependencies: ["Machine Primitives"]
+        ),
+
+        // MARK: - Test Support
+        .target(
+            name: "Machine Primitives Test Support",
+            dependencies: [
+                "Machine Primitives",
+                .product(name: "Graph Primitives Test Support", package: "swift-graph-primitives"),
+            ],
+            path: "Tests/Support"
         ),
     ],
     swiftLanguageModes: [.v6]
