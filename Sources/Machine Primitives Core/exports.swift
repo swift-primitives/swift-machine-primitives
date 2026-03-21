@@ -1,1 +1,2 @@
-// Machine Primitives Core — no external dependencies
+// Machine Primitives Core — exports shared dependencies
+@_exported public import Graph_Primitives_Core

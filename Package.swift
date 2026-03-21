@@ -73,7 +73,10 @@ let package = Package(
         // MARK: - Core
 
         .target(
-            name: "Machine Primitives Core"
+            name: "Machine Primitives Core",
+            dependencies: [
+                .product(name: "Graph Primitives Core", package: "swift-graph-primitives"),
+            ]
         ),
 
         // MARK: - Value & Capture
@@ -143,7 +146,6 @@ let package = Package(
                 "Machine Combine Primitives",
                 "Machine Next Primitives",
                 "Machine Finalize Primitives",
-                .product(name: "Graph Primitives Core", package: "swift-graph-primitives"),
             ]
         ),
         .target(
@@ -151,7 +153,6 @@ let package = Package(
             dependencies: [
                 "Machine Node Primitives",
                 "Machine Capture Primitives",
-                .product(name: "Graph Primitives Core", package: "swift-graph-primitives"),
             ]
         ),
 
