@@ -46,12 +46,12 @@ extension Machine.Capture {
                 payload: UnsafeMutableRawPointer,
                 destroy: @escaping @Sendable (UnsafeMutableRawPointer) -> Void
             ) {
-                self.payload = payload
-                self.destroy = destroy
+                unsafe (self.payload = payload)
+                unsafe (self.destroy = destroy)
             }
 
             deinit {
-                destroy(payload)
+                unsafe destroy(payload)
             }
         }
 
@@ -59,14 +59,14 @@ extension Machine.Capture {
         @usableFromInline
         init<T>(_ value: T) {
             let pointer = UnsafeMutablePointer<T>.allocate(capacity: 1)
-            pointer.initialize(to: value)
+            unsafe pointer.initialize(to: value)
 
             self.type = ObjectIdentifier(T.self)
-            self.storage = _Storage(
+            self.storage = unsafe _Storage(
                 payload: UnsafeMutableRawPointer(pointer),
                 destroy: { raw in
-                    raw.assumingMemoryBound(to: T.self).deinitialize(count: 1)
-                    raw.deallocate()
+                    unsafe raw.assumingMemoryBound(to: T.self).deinitialize(count: 1)
+                    unsafe raw.deallocate()
                 }
             )
             #if DEBUG
@@ -79,7 +79,7 @@ extension Machine.Capture {
         /// All `assumingMemoryBound` calls for reading go through here.
         @usableFromInline
         func _project<T>(_: T.Type) -> UnsafePointer<T> {
-            UnsafePointer(storage.payload.assumingMemoryBound(to: T.self))
+            unsafe UnsafePointer(storage.payload.assumingMemoryBound(to: T.self))
         }
 
         /// Reads the stored value, checking the type matches.
@@ -92,7 +92,7 @@ extension Machine.Capture {
             #else
             precondition(type == ObjectIdentifier(T.self))
             #endif
-            return _project(T.self).pointee
+            return unsafe _project(T.self).pointee
         }
     }
 }

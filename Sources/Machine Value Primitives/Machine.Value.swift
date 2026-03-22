@@ -57,12 +57,12 @@ extension Machine {
 
             @usableFromInline
             init(payload: UnsafeMutableRawPointer, table: _Table) {
-                self.payload = payload
+                unsafe (self.payload = payload)
                 self.table = table
             }
 
             deinit {
-                table.destroy(payload)
+                unsafe table.destroy(payload)
             }
         }
 
@@ -81,10 +81,10 @@ extension Machine {
 
             @usableFromInline
             init<T: ~Copyable>(_: T.Type) {
-                self.destroy = { raw in
-                    raw.assumingMemoryBound(to: T.self).deinitialize(count: 1)
-                    raw.deallocate()
-                }
+                unsafe (self.destroy = { raw in
+                    unsafe raw.assumingMemoryBound(to: T.self).deinitialize(count: 1)
+                    unsafe raw.deallocate()
+                })
             }
         }
 
@@ -140,7 +140,7 @@ extension Machine {
 
             @usableFromInline
             init(_pointer: UnsafePointer<T>) {
-                self._pointer = _pointer
+                unsafe (self._pointer = _pointer)
             }
 
             /// Borrow access to the referenced value.
@@ -241,7 +241,7 @@ extension Machine.Value where Mode == Machine.Capture.Mode.Reference {
     @inlinable
     public static func make<T: Sendable & ~Copyable>(_ value: consuming T) -> Machine.Value<Mode> {
         let payload = UnsafeMutablePointer<T>.allocate(capacity: 1)
-        payload.initialize(to: value)
+        unsafe payload.initialize(to: value)
 
         let table = _Table(T.self)
         let storage = unsafe _Storage(
@@ -266,7 +266,7 @@ extension Machine.Value where Mode == Machine.Capture.Mode.Unchecked {
     @inlinable
     public static func make<T: ~Copyable>(_ value: consuming T) -> Machine.Value<Mode> {
         let payload = UnsafeMutablePointer<T>.allocate(capacity: 1)
-        payload.initialize(to: value)
+        unsafe payload.initialize(to: value)
 
         let table = _Table(T.self)
         let storage = unsafe _Storage(
