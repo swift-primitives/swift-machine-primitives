@@ -48,7 +48,7 @@ extension Machine {
         /// This is the ONLY `@unchecked Sendable` in `Machine.Value`. The outer
         /// `Value<Mode>` derives Sendable from `Mode: Sendable` without `@unchecked`.
         @usableFromInline
-        final class _Storage: @unchecked Sendable {
+        @safe final class _Storage: @unchecked Sendable {
             @usableFromInline
             let payload: UnsafeMutableRawPointer
 
@@ -73,7 +73,7 @@ extension Machine {
         /// compatibility as it's equivalent to generic specialization—no closure
         /// context with user data, only compiler-generated type information.
         @usableFromInline
-        struct _Table: Sendable {
+        @safe struct _Table: Sendable {
             /// Destroys and deallocates the payload.
             /// Specialized for `T` at construction time.
             @usableFromInline

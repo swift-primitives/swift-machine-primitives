@@ -34,7 +34,7 @@ extension Machine.Capture {
         /// - The pointee is never mutated after construction
         /// - `deinit` is called exactly once when refcount hits zero
         @usableFromInline
-        final class _Storage: @unchecked Sendable {
+        @safe final class _Storage: @unchecked Sendable {
             @usableFromInline
             let payload: UnsafeMutableRawPointer
 
