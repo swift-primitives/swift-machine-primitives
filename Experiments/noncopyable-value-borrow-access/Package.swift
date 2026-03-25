@@ -21,7 +21,6 @@ for target in package.targets where ![.system, .binary, .plugin, .macro].contain
         // NonisolatedNonsendingByDefault omitted — not relevant to this experiment
         .enableExperimentalFeature("Lifetimes"),
         .enableExperimentalFeature("SuppressedAssociatedTypes"),
-        .enableExperimentalFeature("SuppressedAssociatedTypesWithDefaults"),
     ]
 
     let package: [SwiftSetting] = []
