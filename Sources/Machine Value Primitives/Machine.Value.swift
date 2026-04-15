@@ -37,16 +37,12 @@ extension Machine {
         /// This is NOT `AnyObject`—it's a concrete class type. No `as?` casting
         /// is needed to access the payload.
         ///
-        /// ## Sendable
-        ///
-        /// `_Storage` is `@unchecked Sendable` because:
-        /// - `payload` pointer is immutable after construction
-        /// - `table` is Sendable (contains only @Sendable function)
-        /// - The pointee is immutable (value stored at construction, never mutated)
-        /// - `deinit` is called exactly once when refcount hits zero
-        ///
-        /// This is the ONLY `@unchecked Sendable` in `Machine.Value`. The outer
-        /// `Value<Mode>` derives Sendable from `Mode: Sendable` without `@unchecked`.
+        // WHY: Category D — structural Sendable workaround (SP-7).
+        // WHY: Immutable `let payload: UnsafeMutableRawPointer` + `let table: _Table`
+        // WHY: after construction. UnsafeMutableRawPointer blocks structural inference.
+        // WHY: No synchronization, no ~Copyable. Pointee is never mutated.
+        // WHEN TO REMOVE: When compiler gains structural Sendable through raw pointers.
+        // TRACKING: unsafe-audit-findings.md Category D SP-7.
         @usableFromInline
         @safe final class _Storage: @unchecked Sendable {
             @usableFromInline

@@ -5,15 +5,11 @@ extension Machine.Capture {
     /// type-specialized destroy function. No existentials (`AnyObject`, `Any`)
     /// or dynamic casts (`as?`, `as!`) are used.
     ///
-    /// ## Sendable
-    ///
-    /// `Slot` is `@unchecked Sendable` because:
-    /// - `_Storage` is `@unchecked Sendable` (immutable after construction)
-    /// - `type` is `ObjectIdentifier` which is Sendable
-    /// - In Reference mode, only `T: Sendable` values can be stored (enforced at `Store.insert`)
-    ///
-    /// This conformance is only exercised when `Frozen<Mode.Reference>` derives
-    /// Sendable, which requires all stored values to have been Sendable at insertion.
+    // WHY: Category D — structural Sendable workaround (SP-7).
+    // WHY: Struct wraps _Storage (immutable after construction) + ObjectIdentifier.
+    // WHY: @unchecked forced because inner _Storage is itself @unchecked.
+    // WHEN TO REMOVE: When inner _Storage gains structural Sendable.
+    // TRACKING: unsafe-audit-findings.md Category D SP-7.
     public struct Slot: @unchecked Sendable {
         @usableFromInline
         let type: ObjectIdentifier
@@ -28,11 +24,11 @@ extension Machine.Capture {
 
         /// Reference-counted storage for the erased payload.
         ///
-        /// `@unchecked Sendable` because:
-        /// - `payload` pointer is immutable after construction
-        /// - `destroy` is a `@Sendable` function (captures only type metadata)
-        /// - The pointee is never mutated after construction
-        /// - `deinit` is called exactly once when refcount hits zero
+        // WHY: Category D — structural Sendable workaround (SP-7).
+        // WHY: Immutable pointer + @Sendable destroy function. UnsafeMutableRawPointer
+        // WHY: blocks structural inference. No synchronization.
+        // WHEN TO REMOVE: When compiler gains structural Sendable through raw pointers.
+        // TRACKING: unsafe-audit-findings.md Category D SP-7.
         @usableFromInline
         @safe final class _Storage: @unchecked Sendable {
             @usableFromInline
