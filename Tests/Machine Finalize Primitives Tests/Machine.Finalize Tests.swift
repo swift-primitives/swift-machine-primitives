@@ -8,8 +8,8 @@ struct MachineFinalizeArrayTests {
     typealias Value = Machine.Value<Mode>
     typealias Finalize = Machine.Finalize.Array<Mode>
 
-    @Test("finalize converts values to typed array")
-    func finalizeConvertsValuesToTypedArray() {
+    @Test
+    func `finalize converts values to typed array`() {
         var store = Store()
         let finalize = Finalize(elementType: Int.self, store: &store)
         let frozen = store.freeze()
@@ -23,8 +23,8 @@ struct MachineFinalizeArrayTests {
         #expect(result[as: [Int].self] == [1, 2, 3])
     }
 
-    @Test("finalize with empty array")
-    func finalizeWithEmptyArray() {
+    @Test
+    func `finalize with empty array`() {
         var store = Store()
         let finalize = Finalize(elementType: String.self, store: &store)
         let frozen = store.freeze()
@@ -34,8 +34,8 @@ struct MachineFinalizeArrayTests {
         #expect(result[as: [String].self] == [])
     }
 
-    @Test("finalize with single element")
-    func finalizeWithSingleElement() {
+    @Test
+    func `finalize with single element`() {
         var store = Store()
         let finalize = Finalize(elementType: Double.self, store: &store)
         let frozen = store.freeze()
@@ -45,8 +45,8 @@ struct MachineFinalizeArrayTests {
         #expect(result[as: [Double].self] == [3.14])
     }
 
-    @Test("finalize with string values")
-    func finalizeWithStringValues() {
+    @Test
+    func `finalize with string values`() {
         var store = Store()
         let finalize = Finalize(elementType: String.self, store: &store)
         let frozen = store.freeze()
@@ -59,8 +59,8 @@ struct MachineFinalizeArrayTests {
         #expect(result[as: [String].self] == ["hello", "world"])
     }
 
-    @Test("finalize with custom struct")
-    func finalizeWithCustomStruct() {
+    @Test
+    func `finalize with custom struct`() {
         struct Item: Equatable, Sendable { var id: Int }
 
         var store = Store()
@@ -78,8 +78,8 @@ struct MachineFinalizeArrayTests {
         #expect(items == [Item(id: 1), Item(id: 2), Item(id: 3)])
     }
 
-    @Test("finalize preserves order")
-    func finalizePreservesOrder() {
+    @Test
+    func `finalize preserves order`() {
         var store = Store()
         let finalize = Finalize(elementType: Int.self, store: &store)
         let frozen = store.freeze()
@@ -95,8 +95,8 @@ struct MachineFinalizeArrayTests {
         #expect(result[as: [Int].self] == [5, 3, 1, 4, 2])
     }
 
-    @Test("finalize with optional elements")
-    func finalizeWithOptionalElements() {
+    @Test
+    func `finalize with optional elements`() {
         var store = Store()
         let finalize = Finalize(elementType: Int?.self, store: &store)
         let frozen = store.freeze()
@@ -114,8 +114,8 @@ struct MachineFinalizeArrayTests {
         #expect(array[2] == 3)
     }
 
-    @Test("finalize with tuple elements")
-    func finalizeWithTupleElements() {
+    @Test
+    func `finalize with tuple elements`() {
         var store = Store()
         let finalize = Finalize(elementType: (Int, String).self, store: &store)
         let frozen = store.freeze()
@@ -134,8 +134,8 @@ struct MachineFinalizeArrayTests {
         #expect(array[1].1 == "two")
     }
 
-    @Test("finalize large array")
-    func finalizeLargeArray() {
+    @Test
+    func `finalize large array`() {
         var store = Store()
         let finalize = Finalize(elementType: Int.self, store: &store)
         let frozen = store.freeze()

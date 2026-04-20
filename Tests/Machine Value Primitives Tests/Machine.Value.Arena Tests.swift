@@ -8,8 +8,8 @@ struct MachineValueArenaTests {
     typealias Arena = Machine.Value<Mode>.Arena
     typealias Handle = Machine.Value<Mode>.Handle
 
-    @Test("init creates arena with default capacity")
-    func initWithDefaultCapacity() {
+    @Test
+    func `init creates arena with default capacity`() {
         var arena = Arena()
         let value = Value.make(42)
         let handle = arena.allocate(value)
@@ -17,8 +17,8 @@ struct MachineValueArenaTests {
         #expect(read[as: Int.self] == 42)
     }
 
-    @Test("init creates arena with custom capacity")
-    func initWithCustomCapacity() {
+    @Test
+    func `init creates arena with custom capacity`() {
         var arena = Arena(capacity: 16)
         let value = Value.make("test")
         let handle = arena.allocate(value)
@@ -26,8 +26,8 @@ struct MachineValueArenaTests {
         #expect(read[as: String.self] == "test")
     }
 
-    @Test("allocate returns unique handles")
-    func allocateReturnsUniqueHandles() {
+    @Test
+    func `allocate returns unique handles`() {
         var arena = Arena()
         let handle1 = arena.allocate(Value.make(1))
         let handle2 = arena.allocate(Value.make(2))
@@ -38,8 +38,8 @@ struct MachineValueArenaTests {
         #expect(handle1 != handle3)
     }
 
-    @Test("allocate auto-expands capacity")
-    func allocateAutoExpandsCapacity() {
+    @Test
+    func `allocate auto-expands capacity`() {
         var arena = Arena(capacity: 2)
 
         // Allocate more than initial capacity
@@ -51,16 +51,16 @@ struct MachineValueArenaTests {
         // (We can't directly verify internal capacity, but no crash means success)
     }
 
-    @Test("read returns correct value")
-    func readReturnsCorrectValue() {
+    @Test
+    func `read returns correct value`() {
         var arena = Arena()
         let handle = arena.allocate(Value.make(123))
         let value = arena.read(handle)
         #expect(value[as: Int.self] == 123)
     }
 
-    @Test("read does not remove value")
-    func readDoesNotRemoveValue() {
+    @Test
+    func `read does not remove value`() {
         var arena = Arena()
         let handle = arena.allocate(Value.make(42))
 
@@ -71,8 +71,8 @@ struct MachineValueArenaTests {
         #expect(value2[as: Int.self] == 42)
     }
 
-    @Test("release returns and removes value")
-    func releaseReturnsAndRemovesValue() {
+    @Test
+    func `release returns and removes value`() {
         var arena = Arena()
         let handle = arena.allocate(Value.make(99))
 
@@ -80,8 +80,8 @@ struct MachineValueArenaTests {
         #expect(value[as: Int.self] == 99)
     }
 
-    @Test("multiple values stored independently")
-    func multipleValuesStoredIndependently() {
+    @Test
+    func `multiple values stored independently`() {
         var arena = Arena()
         let h1 = arena.allocate(Value.make("first"))
         let h2 = arena.allocate(Value.make("second"))
@@ -92,8 +92,8 @@ struct MachineValueArenaTests {
         #expect(arena.read(h3)[as: String.self] == "third")
     }
 
-    @Test("reset clears all values")
-    func resetClearsAllValues() {
+    @Test
+    func `reset clears all values`() {
         var arena = Arena()
         _ = arena.allocate(Value.make(1))
         _ = arena.allocate(Value.make(2))
@@ -107,8 +107,8 @@ struct MachineValueArenaTests {
         #expect(value[as: Int.self] == 100)
     }
 
-    @Test("handles are equatable")
-    func handlesAreEquatable() {
+    @Test
+    func `handles are equatable`() {
         var arena = Arena()
         let h1 = arena.allocate(Value.make(1))
         let h2 = arena.allocate(Value.make(2))
@@ -117,8 +117,8 @@ struct MachineValueArenaTests {
         #expect(h1 != h2)
     }
 
-    @Test("handles are hashable")
-    func handlesAreHashable() {
+    @Test
+    func `handles are hashable`() {
         var arena = Arena()
         let h1 = arena.allocate(Value.make(1))
         let h2 = arena.allocate(Value.make(2))
@@ -132,8 +132,8 @@ struct MachineValueArenaTests {
         #expect(set.count == 2)
     }
 
-    @Test("allocation after partial release")
-    func allocationAfterPartialRelease() {
+    @Test
+    func `allocation after partial release`() {
         var arena = Arena()
         let h1 = arena.allocate(Value.make("a"))
         let h2 = arena.allocate(Value.make("b"))

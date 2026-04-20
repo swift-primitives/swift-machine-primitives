@@ -20,29 +20,29 @@ struct MachineProgramTests {
     typealias TestBuilder = Machine.Builder<TestLeaf, TestError, Mode>
     typealias TestProgram = Machine.Program<TestLeaf, TestError, Mode>
 
-    @Test("builder creates empty program")
-    func builderCreatesEmptyProgram() {
+    @Test
+    func `builder creates empty program`() {
         var builder = TestBuilder()
         let program = builder.build()
         #expect(program.graph.isEmpty)
     }
 
-    @Test("builder stores maxDepth")
-    func builderStoresMaxDepth() {
+    @Test
+    func `builder stores maxDepth`() {
         var builder = TestBuilder(maxDepth: 100)
         let program = builder.build()
         #expect(program.maxDepth == 100)
     }
 
-    @Test("builder with nil maxDepth")
-    func builderWithNilMaxDepth() {
+    @Test
+    func `builder with nil maxDepth`() {
         var builder = TestBuilder(maxDepth: .none)
         let program = builder.build()
         #expect(program.maxDepth == nil)
     }
 
-    @Test("allocate returns unique IDs")
-    func allocateReturnsUniqueIDs() {
+    @Test
+    func `allocate returns unique IDs`() {
         var builder = TestBuilder()
         let id0 = builder.allocate(TestNode.hole)
         let id1 = builder.allocate(TestNode.hole)
@@ -53,8 +53,8 @@ struct MachineProgramTests {
         #expect(id0 != id2)
     }
 
-    @Test("allocate stores node")
-    func allocateStoresNode() {
+    @Test
+    func `allocate stores node`() {
         var builder = TestBuilder()
         let id = builder.allocate(TestNode.leaf(.readByte))
         let program = builder.build()
@@ -66,8 +66,8 @@ struct MachineProgramTests {
         }
     }
 
-    @Test("subscript get retrieves correct node")
-    func subscriptGetRetrievesCorrectNode() {
+    @Test
+    func `subscript get retrieves correct node`() {
         var builder = TestBuilder()
         let id1 = builder.allocate(TestNode.pure(Value.make(42)))
         let id2 = builder.allocate(TestNode.leaf(.readInt))
@@ -86,8 +86,8 @@ struct MachineProgramTests {
         }
     }
 
-    @Test("builder subscript patches hole")
-    func builderSubscriptPatchesHole() {
+    @Test
+    func `builder subscript patches hole`() {
         var builder = TestBuilder()
         let id = builder.allocate(TestNode.hole)
 
@@ -101,8 +101,8 @@ struct MachineProgramTests {
         }
     }
 
-    @Test("count grows with allocations")
-    func countGrowsWithAllocations() {
+    @Test
+    func `count grows with allocations`() {
         var builder = TestBuilder()
         let c0 = builder.count
 
@@ -119,8 +119,8 @@ struct MachineProgramTests {
         #expect(c3 > c2)
     }
 
-    @Test("program with various node types")
-    func programWithVariousNodeTypes() {
+    @Test
+    func `program with various node types`() {
         var builder = TestBuilder()
 
         let pureId = builder.allocate(TestNode.pure(Value.make("test")))
@@ -154,8 +154,8 @@ struct MachineProgramTests {
         }
     }
 
-    @Test("forward reference pattern")
-    func forwardReferencePattern() {
+    @Test
+    func `forward reference pattern`() {
         var builder = TestBuilder()
 
         // Allocate a hole for forward reference
@@ -180,8 +180,8 @@ struct MachineProgramTests {
         }
     }
 
-    @Test("oneOf with multiple alternatives")
-    func oneOfWithMultipleAlternatives() {
+    @Test
+    func `oneOf with multiple alternatives`() {
         var builder = TestBuilder()
 
         let alt1 = builder.allocate(TestNode.leaf(.readByte))
@@ -202,8 +202,8 @@ struct MachineProgramTests {
         }
     }
 
-    @Test("sequence node stores both children")
-    func sequenceNodeStoresBothChildren() {
+    @Test
+    func `sequence node stores both children`() {
         var builder = TestBuilder()
 
         let first = builder.allocate(TestNode.leaf(.readByte))
@@ -223,8 +223,8 @@ struct MachineProgramTests {
         }
     }
 
-    @Test("many node configuration")
-    func manyNodeConfiguration() {
+    @Test
+    func `many node configuration`() {
         var builder = TestBuilder()
 
         let child = builder.allocate(TestNode.leaf(.readByte))
@@ -241,8 +241,8 @@ struct MachineProgramTests {
         }
     }
 
-    @Test("optional node configuration")
-    func optionalNodeConfiguration() {
+    @Test
+    func `optional node configuration`() {
         var builder = TestBuilder()
 
         let child = builder.allocate(TestNode.leaf(.readByte))

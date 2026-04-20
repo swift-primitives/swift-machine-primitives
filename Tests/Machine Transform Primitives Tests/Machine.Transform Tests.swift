@@ -9,8 +9,8 @@ struct MachineTransformErasedTests {
     typealias Frozen = Machine.Capture.Frozen<Mode>
     typealias Transform = Machine.Transform.Erased<Mode>
 
-    @Test("apply transforms value correctly")
-    func applyTransformsValue() {
+    @Test
+    func `apply transforms value correctly`() {
         var store = Store()
         let captureID = store.insert({ (x: Int) in x * 2 } as @Sendable (Int) -> Int)
         let transform = Transform(capture: captureID)
@@ -21,8 +21,8 @@ struct MachineTransformErasedTests {
         #expect(output[as: Int.self] == 42)
     }
 
-    @Test("apply changes type")
-    func applyChangesType() {
+    @Test
+    func `apply changes type`() {
         var store = Store()
         let captureID = store.insert({ (x: Int) in String(x) } as @Sendable (Int) -> String)
         let transform = Transform(capture: captureID)
@@ -33,8 +33,8 @@ struct MachineTransformErasedTests {
         #expect(output[as: String.self] == "123")
     }
 
-    @Test("identity transform")
-    func identityTransform() {
+    @Test
+    func `identity transform`() {
         var store = Store()
         let captureID = store.insert({ (x: String) in x } as @Sendable (String) -> String)
         let transform = Transform(capture: captureID)
@@ -45,8 +45,8 @@ struct MachineTransformErasedTests {
         #expect(output[as: String.self] == "unchanged")
     }
 
-    @Test("transform with closure capturing context")
-    func transformWithCapture() {
+    @Test
+    func `transform with closure capturing context`() {
         let multiplier = 10
         var store = Store()
         let captureID = store.insert({ (x: Int) in x * multiplier } as @Sendable (Int) -> Int)
@@ -58,8 +58,8 @@ struct MachineTransformErasedTests {
         #expect(output[as: Int.self] == 50)
     }
 
-    @Test("transform struct to different struct")
-    func transformStructToStruct() {
+    @Test
+    func `transform struct to different struct`() {
         struct Input: Sendable { var value: Int }
         struct Output: Sendable { var doubled: Int }
 
@@ -76,8 +76,8 @@ struct MachineTransformErasedTests {
         #expect(output[as: Output.self].doubled == 14)
     }
 
-    @Test("transform to optional")
-    func transformToOptional() {
+    @Test
+    func `transform to optional`() {
         var store = Store()
         let captureID = store.insert({ (x: Int) -> Int? in
             x > 0 ? x : nil
@@ -90,8 +90,8 @@ struct MachineTransformErasedTests {
         #expect(output[as: Int?.self] == 5)
     }
 
-    @Test("transform array")
-    func transformArray() {
+    @Test
+    func `transform array`() {
         var store = Store()
         let captureID = store.insert({ (arr: [Int]) in arr.map { $0 * 2 } } as @Sendable ([Int]) -> [Int])
         let transform = Transform(capture: captureID)
@@ -117,8 +117,8 @@ struct MachineTransformThrowingTests {
 
     typealias ThrowingTransform = Machine.Transform.Throwing<Mode, TestError>
 
-    @Test("apply succeeds for valid input")
-    func applySucceeds() throws {
+    @Test
+    func `apply succeeds for valid input`() throws {
         var store = Store()
         let captureID = store.insert({ (x: Int) throws(TestError) in
             guard x >= 0 else { throw .negativeValue }
@@ -132,8 +132,8 @@ struct MachineTransformThrowingTests {
         #expect(output[as: Int.self] == 42)
     }
 
-    @Test("apply throws for invalid input")
-    func applyThrows() {
+    @Test
+    func `apply throws for invalid input`() {
         var store = Store()
         let captureID = store.insert({ (x: Int) throws(TestError) in
             guard x >= 0 else { throw .negativeValue }
@@ -149,8 +149,8 @@ struct MachineTransformThrowingTests {
         }
     }
 
-    @Test("apply changes type with throwing")
-    func applyChangesTypeWithThrowing() throws {
+    @Test
+    func `apply changes type with throwing`() throws {
         var store = Store()
         let captureID = store.insert({ (x: String) throws(TestError) -> Int in
             guard let parsed = Int(x) else { throw .overflow }
@@ -164,8 +164,8 @@ struct MachineTransformThrowingTests {
         #expect(output[as: Int.self] == 42)
     }
 
-    @Test("transform with different error types")
-    func transformWithDifferentErrorTypes() throws {
+    @Test
+    func `transform with different error types`() throws {
         enum ParseError: Error, Sendable { case invalid }
         typealias ParseTransform = Machine.Transform.Throwing<Mode, ParseError>
 
@@ -182,8 +182,8 @@ struct MachineTransformThrowingTests {
         #expect(output[as: Int.self] == 99)
     }
 
-    @Test("transform preserves value on success")
-    func transformPreservesValueOnSuccess() throws {
+    @Test
+    func `transform preserves value on success`() throws {
         var store = Store()
         let captureID = store.insert({ (s: String) throws(TestError) in
             s.uppercased()
@@ -196,8 +196,8 @@ struct MachineTransformThrowingTests {
         #expect(output[as: String.self] == "HELLO")
     }
 
-    @Test("throwing transform with closure capture")
-    func throwingTransformWithCapture() throws {
+    @Test
+    func `throwing transform with closure capture`() throws {
         let maxValue = 100
         var store = Store()
         let captureID = store.insert({ (x: Int) throws(TestError) in

@@ -12,8 +12,8 @@ struct MachineFrameTests {
     enum TestError: Error, Sendable { case failed }
     typealias TestFrame = Machine.Frame<NodeID, Checkpoint, Mode, TestError, Never>
 
-    @Test("map stores transform")
-    func mapStoresTransform() {
+    @Test
+    func `map stores transform`() {
         var store = Store()
         let captureID = store.insert({ (x: Int) in x * 2 } as @Sendable (Int) -> Int)
         let transform = Machine.Transform.Erased<Mode>(capture: captureID)
@@ -29,8 +29,8 @@ struct MachineFrameTests {
         }
     }
 
-    @Test("tryMap stores throwing transform")
-    func tryMapStoresThrowingTransform() throws {
+    @Test
+    func `tryMap stores throwing transform`() throws {
         var store = Store()
         let captureID = store.insert({ (x: Int) throws(TestError) in
             guard x > 0 else { throw .failed }
@@ -49,8 +49,8 @@ struct MachineFrameTests {
         }
     }
 
-    @Test("flatMap stores next function")
-    func flatMapStoresNextFunction() {
+    @Test
+    func `flatMap stores next function`() {
         var store = Store()
         let captureID = store.insert({ (x: Bool) in x ? 1 : 0 } as @Sendable (Bool) -> NodeID)
         let next = Machine.Next.Erased<Mode, NodeID>(capture: captureID)
@@ -66,8 +66,8 @@ struct MachineFrameTests {
         }
     }
 
-    @Test("sequence stores sequence state")
-    func sequenceStoresSequenceState() {
+    @Test
+    func `sequence stores sequence state`() {
         var store = Store()
         let captureID = store.insert({ (a: Int, b: Int) in a + b } as @Sendable (Int, Int) -> Int)
         let combine = Machine.Combine.Erased<Mode>(capture: captureID)
@@ -89,8 +89,8 @@ struct MachineFrameTests {
         }
     }
 
-    @Test("oneOf stores alternatives and checkpoint")
-    func oneOfStoresAlternativesAndCheckpoint() {
+    @Test
+    func `oneOf stores alternatives and checkpoint`() {
         let alternatives: [NodeID] = [1, 2, 3, 4]
         let checkpoint: Checkpoint = 100
         let frame: TestFrame = .oneOf(alternatives: alternatives, index: 1, savedCheckpoint: checkpoint)
@@ -104,8 +104,8 @@ struct MachineFrameTests {
         }
     }
 
-    @Test("many stores accumulation state")
-    func manyStoresAccumulationState() {
+    @Test
+    func `many stores accumulation state`() {
         var store = Store()
         var arena = Arena()
         let handle1 = arena.allocate(Value.make(1))
@@ -133,8 +133,8 @@ struct MachineFrameTests {
         }
     }
 
-    @Test("optional stores checkpoint and transforms")
-    func optionalStoresCheckpointAndTransforms() {
+    @Test
+    func `optional stores checkpoint and transforms`() {
         var store = Store()
         var arena = Arena()
         let noneHandle = arena.allocate(Value.make(Int?(nil)))
@@ -158,8 +158,8 @@ struct MachineFrameTests {
         }
     }
 
-    @Test("recursiveExit is marker")
-    func recursiveExitIsMarker() {
+    @Test
+    func `recursiveExit is marker`() {
         let frame: TestFrame = .recursiveExit
 
         if case .recursiveExit = frame {
@@ -178,8 +178,8 @@ struct MachineFrameSequenceTests {
     typealias Arena = Machine.Value<Mode>.Arena
     typealias NodeID = Int
 
-    @Test("second stores node ID and combine")
-    func secondStoresNodeIDAndCombine() {
+    @Test
+    func `second stores node ID and combine`() {
         var store = Store()
         let captureID = store.insert({ (a: String, b: String) in a + b } as @Sendable (String, String) -> String)
         let combine = Machine.Combine.Erased<Mode>(capture: captureID)
@@ -196,8 +196,8 @@ struct MachineFrameSequenceTests {
         }
     }
 
-    @Test("combine stores handle and combine function")
-    func combineStoresHandleAndCombineFunction() {
+    @Test
+    func `combine stores handle and combine function`() {
         var store = Store()
         var arena = Arena()
         let firstHandle = arena.allocate(Value.make(100))
@@ -237,8 +237,8 @@ struct MachineFrameExtraTests {
 
     typealias FrameWithExtra = Machine.Frame<NodeID, Checkpoint, Mode, TestError, MemoEntry>
 
-    @Test("extra stores custom data")
-    func extraStoresCustomData() {
+    @Test
+    func `extra stores custom data`() {
         let memo = MemoEntry(nodeId: 42, position: 100)
         let frame: FrameWithExtra = .extra(memo)
 
@@ -250,8 +250,8 @@ struct MachineFrameExtraTests {
         }
     }
 
-    @Test("frame with Extra can still use other cases")
-    func frameWithExtraCanStillUseOtherCases() {
+    @Test
+    func `frame with Extra can still use other cases`() {
         var store = Store()
         let captureID = store.insert({ (x: Int) in x } as @Sendable (Int) -> Int)
         let transform = Machine.Transform.Erased<Mode>(capture: captureID)
@@ -264,8 +264,8 @@ struct MachineFrameExtraTests {
         }
     }
 
-    @Test("mixing extra and standard frames")
-    func mixingExtraAndStandardFrames() {
+    @Test
+    func `mixing extra and standard frames`() {
         var store = Store()
         let captureID = store.insert({ (x: Int) in x * 2 } as @Sendable (Int) -> Int)
         let transform = Machine.Transform.Erased<Mode>(capture: captureID)

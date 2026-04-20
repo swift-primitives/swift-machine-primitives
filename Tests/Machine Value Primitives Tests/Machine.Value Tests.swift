@@ -5,22 +5,22 @@ import Testing
 struct MachineValueTests {
     typealias Value = Machine.Value<Machine.Capture.Mode.Reference>
 
-    @Test("make stores value with correct type")
-    func makeStoresValue() {
+    @Test
+    func `make stores value with correct type`() {
         let value = Value.make(42)
         let extracted = value[as: Int.self]
         #expect(extracted == 42)
     }
 
-    @Test("make works with String")
-    func makeWithString() {
+    @Test
+    func `make works with String`() {
         let value = Value.make("hello")
         let extracted = value[as: String.self]
         #expect(extracted == "hello")
     }
 
-    @Test("make works with custom struct")
-    func makeWithCustomStruct() {
+    @Test
+    func `make works with custom struct`() {
         struct Point: Sendable { var x: Int; var y: Int }
         let point = Point(x: 10, y: 20)
         let value = Value.make(point)
@@ -29,8 +29,8 @@ struct MachineValueTests {
         #expect(extracted.y == 20)
     }
 
-    @Test("subscript precondition-checks type mismatch")
-    func subscriptPreconditionChecksTypeMismatch() {
+    @Test
+    func `subscript precondition-checks type mismatch`() {
         // The subscript uses precondition, so wrong-type access would trap.
         // We verify correct-type access works; wrong-type trapping is a precondition guarantee.
         let value = Value.make(42)
@@ -38,8 +38,8 @@ struct MachineValueTests {
         #expect(extracted == 42)
     }
 
-    @Test("subscript precondition-checks similar but different types")
-    func subscriptPreconditionChecksSimilarTypes() {
+    @Test
+    func `subscript precondition-checks similar but different types`() {
         // Int32 vs Int are different types — subscript would trap on mismatch.
         // We verify correct-type access works.
         let value = Value.make(Int32(42))
@@ -47,39 +47,39 @@ struct MachineValueTests {
         #expect(extracted == 42)
     }
 
-    @Test("subscript extracts correct type")
-    func subscriptExtractsCorrectType() {
+    @Test
+    func `subscript extracts correct type`() {
         let value = Value.make(99.5)
         let extracted = value[as: Double.self]
         #expect(extracted == 99.5)
     }
 
-    @Test("make preserves array values")
-    func makePreservesArray() {
+    @Test
+    func `make preserves array values`() {
         let array = [1, 2, 3, 4, 5]
         let value = Value.make(array)
         let extracted = value[as: [Int].self]
         #expect(extracted == array)
     }
 
-    @Test("make preserves optional values")
-    func makePreservesOptional() {
+    @Test
+    func `make preserves optional values`() {
         let optional: Int? = 42
         let value = Value.make(optional)
         let extracted = value[as: Int?.self]
         #expect(extracted == optional)
     }
 
-    @Test("make preserves nil optional")
-    func makePreservesNilOptional() {
+    @Test
+    func `make preserves nil optional`() {
         let optional: Int? = nil
         let value = Value.make(optional)
         let extracted = value[as: Int?.self]
         #expect(extracted == nil)
     }
 
-    @Test("make works with tuple")
-    func makeWithTuple() {
+    @Test
+    func `make works with tuple`() {
         let tuple = (1, "two", 3.0)
         let value = Value.make(tuple)
         let extracted = value[as: (Int, String, Double).self]
@@ -88,8 +88,8 @@ struct MachineValueTests {
         #expect(extracted.2 == 3.0)
     }
 
-    @Test("multiple values are independent")
-    func multipleValuesIndependent() {
+    @Test
+    func `multiple values are independent`() {
         let value1 = Value.make(1)
         let value2 = Value.make(2)
         let value3 = Value.make("three")

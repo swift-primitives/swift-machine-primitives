@@ -7,8 +7,8 @@ struct MachineNextErasedTests {
     typealias Store = Machine.Capture.Store<Mode>
     typealias Value = Machine.Value<Mode>
 
-    @Test("next selects node based on input")
-    func nextSelectsNodeBasedOnInput() {
+    @Test
+    func `next selects node based on input`() {
         var store = Store()
         let captureID = store.insert({ (value: Bool) in value ? 1 : 0 } as @Sendable (Bool) -> Int)
         let next = Machine.Next.Erased<Mode, Int>(capture: captureID)
@@ -21,8 +21,8 @@ struct MachineNextErasedTests {
         #expect(next.next(using: frozen, falseValue) == 0)
     }
 
-    @Test("next with integer input")
-    func nextWithIntegerInput() {
+    @Test
+    func `next with integer input`() {
         var store = Store()
         let captureID = store.insert({ (index: Int) in index * 10 } as @Sendable (Int) -> Int)
         let next = Machine.Next.Erased<Mode, Int>(capture: captureID)
@@ -32,8 +32,8 @@ struct MachineNextErasedTests {
         #expect(next.next(using: frozen, input) == 50)
     }
 
-    @Test("next with string pattern matching")
-    func nextWithStringPatternMatching() {
+    @Test
+    func `next with string pattern matching`() {
         var store = Store()
         let captureID = store.insert({ (s: String) in
             switch s {
@@ -50,8 +50,8 @@ struct MachineNextErasedTests {
         #expect(next.next(using: frozen, Value.make("c")) == -1)
     }
 
-    @Test("next with custom node ID type")
-    func nextWithCustomNodeIDType() {
+    @Test
+    func `next with custom node ID type`() {
         struct NodeID: Equatable, Sendable {
             let value: Int
         }
@@ -65,8 +65,8 @@ struct MachineNextErasedTests {
         #expect(next.next(using: frozen, input) == NodeID(value: 42))
     }
 
-    @Test("next with closure capture")
-    func nextWithClosureCapture() {
+    @Test
+    func `next with closure capture`() {
         let offset = 100
         var store = Store()
         let captureID = store.insert({ (x: Int) in x + offset } as @Sendable (Int) -> Int)
@@ -77,8 +77,8 @@ struct MachineNextErasedTests {
         #expect(next.next(using: frozen, input) == 105)
     }
 
-    @Test("next with struct input")
-    func nextWithStructInput() {
+    @Test
+    func `next with struct input`() {
         struct Choice: Sendable { var index: Int }
 
         var store = Store()
@@ -90,8 +90,8 @@ struct MachineNextErasedTests {
         #expect(next.next(using: frozen, input) == 7)
     }
 
-    @Test("next with optional unwrap")
-    func nextWithOptionalUnwrap() {
+    @Test
+    func `next with optional unwrap`() {
         var store = Store()
         let captureID = store.insert({ (opt: Int?) in opt ?? -1 } as @Sendable (Int?) -> Int)
         let next = Machine.Next.Erased<Mode, Int>(capture: captureID)
@@ -104,8 +104,8 @@ struct MachineNextErasedTests {
         #expect(next.next(using: frozen, noneValue) == -1)
     }
 
-    @Test("next with enum discriminant")
-    func nextWithEnumDiscriminant() {
+    @Test
+    func `next with enum discriminant`() {
         enum Token: Sendable { case number, string, symbol }
 
         var store = Store()
@@ -124,8 +124,8 @@ struct MachineNextErasedTests {
         #expect(next.next(using: frozen, Value.make(Token.symbol)) == 2)
     }
 
-    @Test("next with array count")
-    func nextWithArrayCount() {
+    @Test
+    func `next with array count`() {
         var store = Store()
         let captureID = store.insert({ (arr: [String]) in arr.count } as @Sendable ([String]) -> Int)
         let next = Machine.Next.Erased<Mode, Int>(capture: captureID)

@@ -22,8 +22,8 @@ struct MachineNodeTests {
     typealias TestNode = Machine.Node<TestLeaf, TestError, Mode>
     typealias ID = TestNode.ID
 
-    @Test("leaf stores leaf value")
-    func leafStoresLeafValue() {
+    @Test
+    func `leaf stores leaf value`() {
         let node: TestNode = .leaf(.readByte)
 
         if case .leaf(let leaf) = node {
@@ -33,8 +33,8 @@ struct MachineNodeTests {
         }
     }
 
-    @Test("leaf with associated value")
-    func leafWithAssociatedValue() {
+    @Test
+    func `leaf with associated value`() {
         let node: TestNode = .leaf(.advance(10))
 
         if case .leaf(let leaf) = node {
@@ -44,8 +44,8 @@ struct MachineNodeTests {
         }
     }
 
-    @Test("pure stores value")
-    func pureStoresValue() {
+    @Test
+    func `pure stores value`() {
         let value = Value.make(42)
         let node: TestNode = .pure(value)
 
@@ -56,8 +56,8 @@ struct MachineNodeTests {
         }
     }
 
-    @Test("map stores child and transform")
-    func mapStoresChildAndTransform() {
+    @Test
+    func `map stores child and transform`() {
         var store = Store()
         let captureID = store.insert({ (x: Int) in x * 2 } as @Sendable (Int) -> Int)
         let transform = Machine.Transform.Erased<Mode>(capture: captureID)
@@ -76,8 +76,8 @@ struct MachineNodeTests {
         }
     }
 
-    @Test("tryMap stores child and throwing transform")
-    func tryMapStoresChildAndThrowingTransform() throws {
+    @Test
+    func `tryMap stores child and throwing transform`() throws {
         var store = Store()
         let captureID = store.insert({ (x: Int) throws(TestError) in
             guard x >= 0 else { throw .unexpected }
@@ -99,8 +99,8 @@ struct MachineNodeTests {
         }
     }
 
-    @Test("flatMap stores child and next function")
-    func flatMapStoresChildAndNextFunction() {
+    @Test
+    func `flatMap stores child and next function`() {
         var store = Store()
         let captureID = store.insert({ (x: Bool) in x ? ID(10) : ID(20) } as @Sendable (Bool) -> ID)
         let next = Machine.Next.Erased<Mode, ID>(capture: captureID)
@@ -118,8 +118,8 @@ struct MachineNodeTests {
         }
     }
 
-    @Test("sequence stores both children and combine")
-    func sequenceStoresBothChildrenAndCombine() {
+    @Test
+    func `sequence stores both children and combine`() {
         var store = Store()
         let captureID = store.insert({ (a: Int, b: Int) in a + b } as @Sendable (Int, Int) -> Int)
         let combine = Machine.Combine.Erased<Mode>(capture: captureID)
@@ -139,8 +139,8 @@ struct MachineNodeTests {
         }
     }
 
-    @Test("oneOf stores alternatives array")
-    func oneOfStoresAlternativesArray() {
+    @Test
+    func `oneOf stores alternatives array`() {
         let alternatives = [ID(0), ID(1), ID(2)]
         let node: TestNode = .oneOf(alternatives)
 
@@ -151,8 +151,8 @@ struct MachineNodeTests {
         }
     }
 
-    @Test("oneOf with empty alternatives")
-    func oneOfWithEmptyAlternatives() {
+    @Test
+    func `oneOf with empty alternatives`() {
         let node: TestNode = .oneOf([])
 
         if case .oneOf(let alts) = node {
@@ -162,8 +162,8 @@ struct MachineNodeTests {
         }
     }
 
-    @Test("many stores child and finalize")
-    func manyStoresChildAndFinalize() {
+    @Test
+    func `many stores child and finalize`() {
         var store = Store()
         let finalize = Machine.Finalize.Array<Mode>(elementType: Int.self, store: &store)
         let frozen = store.freeze()
@@ -182,8 +182,8 @@ struct MachineNodeTests {
         }
     }
 
-    @Test("optional stores child, wrapSome, and noneValue")
-    func optionalStoresComponents() {
+    @Test
+    func `optional stores child, wrapSome, and noneValue`() {
         var store = Store()
         let captureID = store.insert({ (x: Int) in x as Int? } as @Sendable (Int) -> Int?)
         let wrapSome = Machine.Transform.Erased<Mode>(capture: captureID)
@@ -205,8 +205,8 @@ struct MachineNodeTests {
         }
     }
 
-    @Test("ref stores target ID")
-    func refStoresTargetID() {
+    @Test
+    func `ref stores target ID`() {
         let targetId = ID(99)
         let node: TestNode = .ref(targetId)
 
@@ -217,8 +217,8 @@ struct MachineNodeTests {
         }
     }
 
-    @Test("hole is placeholder")
-    func holeIsPlaceholder() {
+    @Test
+    func `hole is placeholder`() {
         let node: TestNode = .hole
 
         if case .hole = node {
@@ -228,8 +228,8 @@ struct MachineNodeTests {
         }
     }
 
-    @Test("Node.ID is Tagged<Tag, Int>")
-    func nodeIDIsTagged() {
+    @Test
+    func `Node.ID is Tagged<Tag, Int>`() {
         let id1 = ID(42)
         let id2 = ID(42)
         let id3 = ID(0)
@@ -239,8 +239,8 @@ struct MachineNodeTests {
         #expect(id1.rawValue == 42)
     }
 
-    @Test("Node.ID comparison")
-    func nodeIDComparison() {
+    @Test
+    func `Node.ID comparison`() {
         let id1 = ID(1)
         let id2 = ID(2)
         let id3 = ID(1)
