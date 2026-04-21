@@ -1,6 +1,18 @@
 import Testing
 @testable import Machine_Primitives
 
+// WORKAROUND for a Swift 6.3.1 SILGen crash (signal 5) on
+// `store.insert({ ... } as @Sendable (T) throws(E) -> U)`. See
+// `swift-institute/Experiments/silgen-sendable-typed-throws-closure-cast/`.
+fileprivate extension Machine.Capture.Store where Mode == Machine.Capture.Mode.Reference {
+    mutating func insert<In: Sendable, Out: Sendable, E: Error>(
+        _ fn: @Sendable @escaping (In) throws(E) -> Out
+    ) -> Machine.Capture.ID<@Sendable (In) throws(E) -> Out> {
+        func dispatchToBase<V: Sendable>(_ v: V) -> Machine.Capture.ID<V> { self.insert(v) }
+        return dispatchToBase(fn)
+    }
+}
+
 @Suite("Machine.Frame")
 struct MachineFrameTests {
     typealias Mode = Machine.Capture.Mode.Reference
@@ -32,10 +44,10 @@ struct MachineFrameTests {
     @Test
     func `tryMap stores throwing transform`() throws {
         var store = Store()
-        let captureID = store.insert({ (x: Int) throws(TestError) in
+        let captureID = store.insert { (x: Int) throws(TestError) -> Int in
             guard x > 0 else { throw .failed }
             return x
-        } as @Sendable (Int) throws(TestError) -> Int)
+        }
         let transform = Machine.Transform.Throwing<Mode, TestError>(capture: captureID)
         let frozen = store.freeze()
 

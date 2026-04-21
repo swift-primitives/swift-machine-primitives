@@ -1,6 +1,25 @@
 import Testing
 @testable import Machine_Primitives
 
+// WORKAROUND: Swift 6.3.1 SILGen crashes (signal 5, `createInputFunctionArgument` /
+// `LoweredParamGenerator::claimNext`) when a typed-throws `@Sendable` closure
+// literal is passed — via an inline `as @Sendable (In) throws(E) -> Out` cast —
+// into `Store.insert<V: Sendable>(_:)`. This overload's concrete function-typed
+// parameter absorbs the closure at the call site (no `as` needed), and the nested
+// generic `dispatchToBase` routes the stored value through the primary `<V: Sendable>`
+// method — generic parameter `V` is opaque inside `dispatchToBase`, so the outer
+// typed-throws overload cannot match and recursion is impossible.
+// REVISIT: remove once the inline-cast form is accepted by SILGen. Minimal
+// reproducer: `swift-institute/Experiments/silgen-sendable-typed-throws-closure-cast/`.
+fileprivate extension Machine.Capture.Store where Mode == Machine.Capture.Mode.Reference {
+    mutating func insert<In: Sendable, Out: Sendable, E: Error>(
+        _ fn: @Sendable @escaping (In) throws(E) -> Out
+    ) -> Machine.Capture.ID<@Sendable (In) throws(E) -> Out> {
+        func dispatchToBase<V: Sendable>(_ v: V) -> Machine.Capture.ID<V> { self.insert(v) }
+        return dispatchToBase(fn)
+    }
+}
+
 @Suite("Machine.Transform.Erased")
 struct MachineTransformErasedTests {
     typealias Mode = Machine.Capture.Mode.Reference
@@ -120,10 +139,10 @@ struct MachineTransformThrowingTests {
     @Test
     func `apply succeeds for valid input`() throws {
         var store = Store()
-        let captureID = store.insert({ (x: Int) throws(TestError) in
+        let captureID = store.insert { (x: Int) throws(TestError) -> Int in
             guard x >= 0 else { throw .negativeValue }
             return x * 2
-        } as @Sendable (Int) throws(TestError) -> Int)
+        }
         let transform = ThrowingTransform(capture: captureID)
         let frozen = store.freeze()
 
@@ -135,10 +154,10 @@ struct MachineTransformThrowingTests {
     @Test
     func `apply throws for invalid input`() {
         var store = Store()
-        let captureID = store.insert({ (x: Int) throws(TestError) in
+        let captureID = store.insert { (x: Int) throws(TestError) -> Int in
             guard x >= 0 else { throw .negativeValue }
             return x * 2
-        } as @Sendable (Int) throws(TestError) -> Int)
+        }
         let transform = ThrowingTransform(capture: captureID)
         let frozen = store.freeze()
 
@@ -152,10 +171,10 @@ struct MachineTransformThrowingTests {
     @Test
     func `apply changes type with throwing`() throws {
         var store = Store()
-        let captureID = store.insert({ (x: String) throws(TestError) -> Int in
+        let captureID = store.insert { (x: String) throws(TestError) -> Int in
             guard let parsed = Int(x) else { throw .overflow }
             return parsed
-        } as @Sendable (String) throws(TestError) -> Int)
+        }
         let transform = ThrowingTransform(capture: captureID)
         let frozen = store.freeze()
 
@@ -170,10 +189,10 @@ struct MachineTransformThrowingTests {
         typealias ParseTransform = Machine.Transform.Throwing<Mode, ParseError>
 
         var store = Store()
-        let captureID = store.insert({ (s: String) throws(ParseError) in
+        let captureID = store.insert { (s: String) throws(ParseError) -> Int in
             guard let n = Int(s) else { throw .invalid }
             return n
-        } as @Sendable (String) throws(ParseError) -> Int)
+        }
         let transform = ParseTransform(capture: captureID)
         let frozen = store.freeze()
 
@@ -185,9 +204,9 @@ struct MachineTransformThrowingTests {
     @Test
     func `transform preserves value on success`() throws {
         var store = Store()
-        let captureID = store.insert({ (s: String) throws(TestError) in
+        let captureID = store.insert { (s: String) throws(TestError) -> String in
             s.uppercased()
-        } as @Sendable (String) throws(TestError) -> String)
+        }
         let transform = ThrowingTransform(capture: captureID)
         let frozen = store.freeze()
 
@@ -200,10 +219,10 @@ struct MachineTransformThrowingTests {
     func `throwing transform with closure capture`() throws {
         let maxValue = 100
         var store = Store()
-        let captureID = store.insert({ (x: Int) throws(TestError) in
+        let captureID = store.insert { (x: Int) throws(TestError) -> Int in
             guard x <= maxValue else { throw .overflow }
             return x
-        } as @Sendable (Int) throws(TestError) -> Int)
+        }
         let transform = ThrowingTransform(capture: captureID)
         let frozen = store.freeze()
 
