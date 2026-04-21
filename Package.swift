@@ -12,6 +12,11 @@ let package = Package(
         .visionOS(.v26),
     ],
     products: [
+        // MARK: - Namespace
+        .library(
+            name: "Machine Namespace",
+            targets: ["Machine Namespace"]
+        ),
         .library(
             name: "Machine Primitives",
             targets: ["Machine Primitives"]
@@ -70,11 +75,18 @@ let package = Package(
         .package(path: "../swift-graph-primitives"),
     ],
     targets: [
+        // MARK: - Namespace
+        .target(
+            name: "Machine Namespace",
+            dependencies: []
+        ),
+
         // MARK: - Core
 
         .target(
             name: "Machine Primitives Core",
             dependencies: [
+                "Machine Namespace",
                 .product(name: "Graph Primitives Core", package: "swift-graph-primitives"),
             ]
         ),
@@ -170,6 +182,7 @@ let package = Package(
         .target(
             name: "Machine Primitives",
             dependencies: [
+                "Machine Namespace",
                 "Machine Primitives Core",
                 "Machine Value Primitives",
                 "Machine Capture Primitives",
