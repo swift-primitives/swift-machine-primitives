@@ -80,9 +80,9 @@ Graph Primitives                (umbrella — re-exports all)
 | Graph.Default.swift | Namespace |
 | Graph.Default.Value.swift | Default payload construction |
 | Graph.Default.list.swift | Default adjacency list |
-| exports.swift | `@_exported import Identity_Primitives`, `Index_Primitives`, `Array_Primitives` |
+| exports.swift | `@_exported import Tagged_Primitives`, `Index_Primitives`, `Array_Primitives` |
 
-Dependencies: `Identity Primitives`, `Index Primitives`, `Array Primitives`
+Dependencies: `Tagged Primitives`, `Index Primitives`, `Array Primitives`
 
 **Graph Primitives Traversal** (DFS, BFS, topological ordering):
 
@@ -163,7 +163,7 @@ The current exports.swift re-exports 7 packages. Of these, 5 are not used by any
 
 | Package | Used By | Action |
 |---------|---------|--------|
-| Identity Primitives | Core (Node, Tagged) | Keep in Core exports |
+| Tagged Primitives | Core (Node, Tagged) | Keep in Core exports |
 | Index Primitives | Core (Graph.Node is Index<Tag>) | Keep in Core exports |
 | Array Primitives | Core (Sequential storage) | Keep in Core exports |
 | Set Primitives | Analysis, Transform, Reverse | Keep in respective module exports |
@@ -248,9 +248,9 @@ Machine Primitives              (umbrella — re-exports all)
 | Machine.Capture.Mode.Unchecked.swift | `Mode.Unchecked` |
 | Machine.Frame.swift | `Frame<Leaf, Failure, Mode>` — execution frame |
 | Machine.Frame.Sequence.swift | `Frame.Sequence` — sequence frame state |
-| exports.swift | `@_exported import Identity_Primitives`, `Index_Primitives`, `Handle_Primitives`, `Bit_Primitives` |
+| exports.swift | `@_exported import Tagged_Primitives`, `Index_Primitives`, `Handle_Primitives`, `Bit_Primitives` |
 
-Dependencies: `Identity Primitives`, `Index Primitives`, `Handle Primitives`, `Bit Primitives`
+Dependencies: `Tagged Primitives`, `Index Primitives`, `Handle Primitives`, `Bit Primitives`
 
 No dependency on Graph Primitives. The core runtime infrastructure is graph-agnostic.
 
