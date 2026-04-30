@@ -1,3 +1,6 @@
+// Toolchain: Swift 6.3.1 (2026-04-30) — anchor added during Phase 7a sweep [EXP-007a]
+// Revalidated: Swift 6.3.1 (2026-04-30) — PASSES
+//
 // ===----------------------------------------------------------------------===//
 // Experiment: ~Copyable Value with Borrow Access
 //
