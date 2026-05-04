@@ -27,11 +27,6 @@ jobs:
   docs:
     uses: swift-institute/.github/.github/workflows/swift-docs.yml@main
     with:
-      umbrella-module: Machine_Primitives
-      umbrella-display-name: "Machine Primitives"
-      umbrella-bundle-id: "swift-machine-primitives.Machine-Primitives"
-      umbrella-docc-path: "Sources/Machine Primitives/Machine Primitives.docc"
-      exclude-modules: "Machine_Primitives_Test_Support"
       enable-private-repos: true
     secrets:
       PRIVATE_REPO_TOKEN: ${{ secrets.PRIVATE_REPO_TOKEN }}
