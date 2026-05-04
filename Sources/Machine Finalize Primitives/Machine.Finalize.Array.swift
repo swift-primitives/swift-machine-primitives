@@ -8,10 +8,11 @@ extension Machine.Finalize {
         public let capture: Machine.Capture.RawID
 
         @usableFromInline
-        let _finalize: @Sendable (
-            borrowing Machine.Capture.Frozen<Mode>,
-            [Machine.Value<Mode>]
-        ) -> Machine.Value<Mode>
+        let _finalize:
+            @Sendable (
+                borrowing Machine.Capture.Frozen<Mode>,
+                [Machine.Value<Mode>]
+            ) -> Machine.Value<Mode>
 
         @inlinable
         public func finalize(

@@ -1,4 +1,5 @@
 import Testing
+
 @testable import Machine_Primitives
 
 @Suite("Machine.Value.Arena")

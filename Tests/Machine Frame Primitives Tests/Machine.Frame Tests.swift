@@ -1,11 +1,12 @@
 import Testing
+
 @testable import Machine_Primitives
 
 // WORKAROUND for a Swift 6.3.1 SILGen crash (signal 5) on
 // `store.insert({ ... } as @Sendable (T) throws(E) -> U)`. See
 // `swift-institute/Experiments/silgen-sendable-typed-throws-closure-cast/`.
-fileprivate extension Machine.Capture.Store where Mode == Machine.Capture.Mode.Reference {
-    mutating func insert<In: Sendable, Out: Sendable, E: Error>(
+extension Machine.Capture.Store where Mode == Machine.Capture.Mode.Reference {
+    fileprivate mutating func insert<In: Sendable, Out: Sendable, E: Error>(
         _ fn: @Sendable @escaping (In) throws(E) -> Out
     ) -> Machine.Capture.ID<@Sendable (In) throws(E) -> Out> {
         func dispatchToBase<V: Sendable>(_ v: V) -> Machine.Capture.ID<V> { self.insert(v) }
@@ -290,9 +291,9 @@ struct MachineFrameExtraTests {
 
         #expect(frames.count == 4)
 
-        if case .map = frames[0] { } else { Issue.record("Expected map at 0") }
+        if case .map = frames[0] {} else { Issue.record("Expected map at 0") }
         if case .extra(let e) = frames[1] { #expect(e.nodeId == 1) } else { Issue.record("Expected extra at 1") }
-        if case .recursiveExit = frames[2] { } else { Issue.record("Expected recursiveExit at 2") }
+        if case .recursiveExit = frames[2] {} else { Issue.record("Expected recursiveExit at 2") }
         if case .extra(let e) = frames[3] { #expect(e.nodeId == 2) } else { Issue.record("Expected extra at 3") }
     }
 }

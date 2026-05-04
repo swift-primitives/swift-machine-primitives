@@ -1,4 +1,5 @@
 import Testing
+
 @testable import Machine_Primitives
 
 // WORKAROUND: Swift 6.3.1 SILGen crashes (signal 5, `createInputFunctionArgument` /
@@ -11,8 +12,8 @@ import Testing
 // typed-throws overload cannot match and recursion is impossible.
 // REVISIT: remove once the inline-cast form is accepted by SILGen. Minimal
 // reproducer: `swift-institute/Experiments/silgen-sendable-typed-throws-closure-cast/`.
-fileprivate extension Machine.Capture.Store where Mode == Machine.Capture.Mode.Reference {
-    mutating func insert<In: Sendable, Out: Sendable, E: Error>(
+extension Machine.Capture.Store where Mode == Machine.Capture.Mode.Reference {
+    fileprivate mutating func insert<In: Sendable, Out: Sendable, E: Error>(
         _ fn: @Sendable @escaping (In) throws(E) -> Out
     ) -> Machine.Capture.ID<@Sendable (In) throws(E) -> Out> {
         func dispatchToBase<V: Sendable>(_ v: V) -> Machine.Capture.ID<V> { self.insert(v) }
@@ -83,9 +84,11 @@ struct MachineTransformErasedTests {
         struct Output: Sendable { var doubled: Int }
 
         var store = Store()
-        let captureID = store.insert({ (input: Input) in
-            Output(doubled: input.value * 2)
-        } as @Sendable (Input) -> Output)
+        let captureID = store.insert(
+            { (input: Input) in
+                Output(doubled: input.value * 2)
+            } as @Sendable (Input) -> Output
+        )
         let transform = Transform(capture: captureID)
         let frozen = store.freeze()
 
@@ -98,9 +101,11 @@ struct MachineTransformErasedTests {
     @Test
     func `transform to optional`() {
         var store = Store()
-        let captureID = store.insert({ (x: Int) -> Int? in
-            x > 0 ? x : nil
-        } as @Sendable (Int) -> Int?)
+        let captureID = store.insert(
+            { (x: Int) -> Int? in
+                x > 0 ? x : nil
+            } as @Sendable (Int) -> Int?
+        )
         let transform = Transform(capture: captureID)
         let frozen = store.freeze()
 

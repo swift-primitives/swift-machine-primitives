@@ -1,4 +1,5 @@
 import Testing
+
 @testable import Machine_Primitives
 
 @Suite("Machine.Program")
@@ -135,15 +136,18 @@ struct MachineProgramTests {
 
         #expect(!program.graph.isEmpty)
 
-        if case .pure = program[pureId] { } else {
+        if case .pure = program[pureId] {
+        } else {
             Issue.record("Expected pure at pureId")
         }
 
-        if case .leaf = program[leafId] { } else {
+        if case .leaf = program[leafId] {
+        } else {
             Issue.record("Expected leaf at leafId")
         }
 
-        if case .hole = program[holeId] { } else {
+        if case .hole = program[holeId] {
+        } else {
             Issue.record("Expected hole at holeId")
         }
 
@@ -175,7 +179,8 @@ struct MachineProgramTests {
             Issue.record("Expected ref at bodyId")
         }
 
-        if case .leaf = program[recursiveId] { } else {
+        if case .leaf = program[recursiveId] {
+        } else {
             Issue.record("Expected leaf at recursiveId after fill")
         }
     }

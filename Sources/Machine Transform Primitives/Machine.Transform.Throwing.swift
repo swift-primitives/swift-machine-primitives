@@ -8,10 +8,11 @@ extension Machine.Transform {
         public let capture: Machine.Capture.RawID
 
         @usableFromInline
-        let _apply: @Sendable (
-            borrowing Machine.Capture.Frozen<Mode>,
-            Machine.Value<Mode>
-        ) throws(Failure) -> Machine.Value<Mode>
+        let _apply:
+            @Sendable (
+                borrowing Machine.Capture.Frozen<Mode>,
+                Machine.Value<Mode>
+            ) throws(Failure) -> Machine.Value<Mode>
 
         @inlinable
         public func apply(

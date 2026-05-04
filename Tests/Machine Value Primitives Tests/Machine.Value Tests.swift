@@ -1,4 +1,5 @@
 import Testing
+
 @testable import Machine_Primitives
 
 @Suite("Machine.Value")
@@ -21,7 +22,10 @@ struct MachineValueTests {
 
     @Test
     func `make works with custom struct`() {
-        struct Point: Sendable { var x: Int; var y: Int }
+        struct Point: Sendable {
+            var x: Int
+            var y: Int
+        }
         let point = Point(x: 10, y: 20)
         let value = Value.make(point)
         let extracted = value[as: Point.self]

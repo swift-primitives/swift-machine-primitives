@@ -1,4 +1,5 @@
 import Testing
+
 @testable import Machine_Primitives
 
 @Suite("Machine.Next.Erased")
@@ -35,13 +36,15 @@ struct MachineNextErasedTests {
     @Test
     func `next with string pattern matching`() {
         var store = Store()
-        let captureID = store.insert({ (s: String) in
-            switch s {
-            case "a": return 0
-            case "b": return 1
-            default: return -1
-            }
-        } as @Sendable (String) -> Int)
+        let captureID = store.insert(
+            { (s: String) in
+                switch s {
+                case "a": return 0
+                case "b": return 1
+                default: return -1
+                }
+            } as @Sendable (String) -> Int
+        )
         let next = Machine.Next.Erased<Mode, Int>(capture: captureID)
         let frozen = store.freeze()
 
@@ -109,13 +112,15 @@ struct MachineNextErasedTests {
         enum Token: Sendable { case number, string, symbol }
 
         var store = Store()
-        let captureID = store.insert({ (token: Token) in
-            switch token {
-            case .number: return 0
-            case .string: return 1
-            case .symbol: return 2
-            }
-        } as @Sendable (Token) -> Int)
+        let captureID = store.insert(
+            { (token: Token) in
+                switch token {
+                case .number: return 0
+                case .string: return 1
+                case .symbol: return 2
+                }
+            } as @Sendable (Token) -> Int
+        )
         let next = Machine.Next.Erased<Mode, Int>(capture: captureID)
         let frozen = store.freeze()
 

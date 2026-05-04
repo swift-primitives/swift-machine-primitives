@@ -1,4 +1,5 @@
 import Testing
+
 @testable import Machine_Primitives
 
 @Suite("Machine.Combine.Erased")
@@ -52,7 +53,10 @@ struct MachineCombineErasedTests {
 
     @Test
     func `combine into custom struct`() {
-        struct Point: Sendable { var x: Int; var y: Int }
+        struct Point: Sendable {
+            var x: Int
+            var y: Int
+        }
 
         var store = Store()
         let captureID = store.insert({ (x: Int, y: Int) in Point(x: x, y: y) } as @Sendable (Int, Int) -> Point)
@@ -111,9 +115,11 @@ struct MachineCombineErasedTests {
     func `combine with closure capture`() {
         let separator = "-"
         var store = Store()
-        let captureID = store.insert({ (a: String, b: String) in
-            a + separator + b
-        } as @Sendable (String, String) -> String)
+        let captureID = store.insert(
+            { (a: String, b: String) in
+                a + separator + b
+            } as @Sendable (String, String) -> String
+        )
         let combine = Combine(capture: captureID)
         let frozen = store.freeze()
 
@@ -126,10 +132,12 @@ struct MachineCombineErasedTests {
     @Test
     func `combine into optional`() {
         var store = Store()
-        let captureID = store.insert({ (a: Int, b: Int) -> Int? in
-            let sum = a + b
-            return sum > 0 ? sum : nil
-        } as @Sendable (Int, Int) -> Int?)
+        let captureID = store.insert(
+            { (a: Int, b: Int) -> Int? in
+                let sum = a + b
+                return sum > 0 ? sum : nil
+            } as @Sendable (Int, Int) -> Int?
+        )
         let combine = Combine(capture: captureID)
         let frozen = store.freeze()
 

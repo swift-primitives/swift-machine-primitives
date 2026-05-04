@@ -1,4 +1,5 @@
 import Testing
+
 @testable import Machine_Primitives
 
 @Suite("Machine.Finalize.Array")
@@ -17,7 +18,7 @@ struct MachineFinalizeArrayTests {
         let values = [
             Value.make(1),
             Value.make(2),
-            Value.make(3)
+            Value.make(3),
         ]
         let result = finalize.finalize(using: frozen, values)
         #expect(result[as: [Int].self] == [1, 2, 3])
@@ -53,7 +54,7 @@ struct MachineFinalizeArrayTests {
 
         let values = [
             Value.make("hello"),
-            Value.make("world")
+            Value.make("world"),
         ]
         let result = finalize.finalize(using: frozen, values)
         #expect(result[as: [String].self] == ["hello", "world"])
@@ -70,7 +71,7 @@ struct MachineFinalizeArrayTests {
         let values = [
             Value.make(Item(id: 1)),
             Value.make(Item(id: 2)),
-            Value.make(Item(id: 3))
+            Value.make(Item(id: 3)),
         ]
         let result = finalize.finalize(using: frozen, values)
 
@@ -89,7 +90,7 @@ struct MachineFinalizeArrayTests {
             Value.make(3),
             Value.make(1),
             Value.make(4),
-            Value.make(2)
+            Value.make(2),
         ]
         let result = finalize.finalize(using: frozen, values)
         #expect(result[as: [Int].self] == [5, 3, 1, 4, 2])
@@ -104,7 +105,7 @@ struct MachineFinalizeArrayTests {
         let values = [
             Value.make(Int?(1)),
             Value.make(Int?(nil)),
-            Value.make(Int?(3))
+            Value.make(Int?(3)),
         ]
         let result = finalize.finalize(using: frozen, values)
 
@@ -122,7 +123,7 @@ struct MachineFinalizeArrayTests {
 
         let values = [
             Value.make((1, "one")),
-            Value.make((2, "two"))
+            Value.make((2, "two")),
         ]
         let result = finalize.finalize(using: frozen, values)
 

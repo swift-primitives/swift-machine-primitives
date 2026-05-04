@@ -62,7 +62,7 @@ extension Machine {
 }
 
 extension Machine.Node: Sendable
-    where Leaf: Sendable, Failure: Sendable, Mode: Sendable {}
+where Leaf: Sendable, Failure: Sendable, Mode: Sendable {}
 
 // MARK: - Graph Adjacency
 
@@ -70,16 +70,16 @@ extension Machine.Node where Leaf: Sendable, Failure: Sendable, Mode: Sendable {
     /// The structurally adjacent node IDs.
     public var adjacent: [ID] {
         switch self {
-        case .leaf, .pure, .hole:          return []
-        case .map(let child, _):           return [child]
-        case .tryMap(let child, _):        return [child]
-        case .flatMap(let child, _):       return [child]
-        case .sequence(let a, let b, _):   return [a, b]
-        case .oneOf(let ids):              return ids
-        case .many(let child, _):          return [child]
-        case .fold(let child, _, _):       return [child]
-        case .optional(let child, _, _):   return [child]
-        case .ref(let id):                 return [id]
+        case .leaf, .pure, .hole: return []
+        case .map(let child, _): return [child]
+        case .tryMap(let child, _): return [child]
+        case .flatMap(let child, _): return [child]
+        case .sequence(let a, let b, _): return [a, b]
+        case .oneOf(let ids): return ids
+        case .many(let child, _): return [child]
+        case .fold(let child, _, _): return [child]
+        case .optional(let child, _, _): return [child]
+        case .ref(let id): return [id]
         }
     }
 

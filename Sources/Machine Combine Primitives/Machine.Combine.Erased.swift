@@ -8,11 +8,12 @@ extension Machine.Combine {
         public let capture: Machine.Capture.RawID
 
         @usableFromInline
-        let _combine: @Sendable (
-            borrowing Machine.Capture.Frozen<Mode>,
-            Machine.Value<Mode>,
-            Machine.Value<Mode>
-        ) -> Machine.Value<Mode>
+        let _combine:
+            @Sendable (
+                borrowing Machine.Capture.Frozen<Mode>,
+                Machine.Value<Mode>,
+                Machine.Value<Mode>
+            ) -> Machine.Value<Mode>
 
         @inlinable
         public func combine(

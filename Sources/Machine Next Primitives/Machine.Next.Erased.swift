@@ -8,10 +8,11 @@ extension Machine.Next {
         public let capture: Machine.Capture.RawID
 
         @usableFromInline
-        let _next: @Sendable (
-            borrowing Machine.Capture.Frozen<Mode>,
-            Machine.Value<Mode>
-        ) -> NodeID
+        let _next:
+            @Sendable (
+                borrowing Machine.Capture.Frozen<Mode>,
+                Machine.Value<Mode>
+            ) -> NodeID
 
         @inlinable
         public func next(

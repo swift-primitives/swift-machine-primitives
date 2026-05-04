@@ -18,8 +18,8 @@ extension Machine.Capture {
         let storage: _Storage
 
         #if DEBUG
-        @usableFromInline
-        let typeName: String
+            @usableFromInline
+            let typeName: String
         #endif
 
         /// Reference-counted storage for the erased payload.
@@ -66,7 +66,7 @@ extension Machine.Capture {
                 }
             )
             #if DEBUG
-            self.typeName = String(reflecting: T.self)
+                self.typeName = String(reflecting: T.self)
             #endif
         }
 
@@ -81,12 +81,12 @@ extension Machine.Capture {
         /// Reads the stored value, checking the type matches.
         public func read<T>(_: T.Type) -> T {
             #if DEBUG
-            precondition(
-                type == ObjectIdentifier(T.self),
-                "Capture type mismatch: expected \(T.self), stored \(typeName)"
-            )
+                precondition(
+                    type == ObjectIdentifier(T.self),
+                    "Capture type mismatch: expected \(T.self), stored \(typeName)"
+                )
             #else
-            precondition(type == ObjectIdentifier(T.self))
+                precondition(type == ObjectIdentifier(T.self))
             #endif
             return unsafe _project(T.self).pointee
         }
