@@ -9,8 +9,6 @@
 //
 // ===----------------------------------------------------------------------===//
 
-public import Handle_Primitives
-
 extension Machine.Value {
     /// A simple array-based arena for storing values during machine execution.
     ///

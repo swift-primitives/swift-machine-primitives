@@ -71,7 +71,6 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(path: "../swift-handle-primitives"),
         .package(path: "../swift-graph-primitives"),
     ],
     targets: [
@@ -97,7 +96,6 @@ let package = Package(
             name: "Machine Value Primitives",
             dependencies: [
                 "Machine Primitives Core",
-                .product(name: "Handle Primitives", package: "swift-handle-primitives"),
             ]
         ),
         .target(

@@ -9,15 +9,7 @@
 //
 // ===----------------------------------------------------------------------===//
 
-public import Handle_Primitives
-
 extension Machine.Value {
-    /// Phantom type tag for machine value arena handles.
-    ///
-    /// This type exists solely to distinguish `Machine.Value.Handle` handles
-    /// from other handle types at compile time.
-    public enum _MachineValueArenaTag {}
-
     /// A handle to a value stored in an arena.
     ///
     /// `Handle` is a lightweight reference to a slot in a `Machine.Value.Arena`,
@@ -29,12 +21,20 @@ extension Machine.Value {
     /// Handles include a generation counter that is validated against the arena.
     /// When an arena is reset, its generation increments, invalidating all
     /// previously-issued handles. Attempts to use a stale handle will be detected.
-    ///
-    /// ## Implementation Note
-    ///
-    /// `Handle` is implemented as `Handle_Primitives.Handle<_MachineValueArenaTag>`
-    /// to unify handle types across the Swift Institute primitives.
-    public typealias Handle = Handle_Primitives.Handle<_MachineValueArenaTag>
+    public struct Handle: Hashable, Sendable {
+        /// The slot index in the arena's storage.
+        public let index: Int
+
+        /// The generation counter for ABA prevention.
+        public let generation: UInt32
+
+        /// Creates a handle with the given index and generation.
+        @inlinable
+        public init(index: Int, generation: UInt32) {
+            self.index = index
+            self.generation = generation
+        }
+    }
 }
 
 // MARK: - Construction Helpers
