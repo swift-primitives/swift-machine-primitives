@@ -13,7 +13,7 @@ struct MachineProgramTests {
         case readInt
     }
 
-    enum TestError: Error, Sendable {
+    enum TestError: Swift.Error, Sendable {
         case failed
     }
 

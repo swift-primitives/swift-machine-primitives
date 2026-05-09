@@ -9,7 +9,7 @@ extension Machine {
     /// - `Failure`: The error type for fallible operations
     /// - `Extra`: Extension point for façade-specific frame types (use `Never` if not needed)
     @safe
-    public enum Frame<NodeID, Checkpoint, Mode, Failure: Error, Extra> {
+    public enum Frame<NodeID, Checkpoint, Mode, Failure: Swift.Error, Extra> {
         /// Apply a non-throwing transform to the result.
         case map(transform: Transform.Erased<Mode>)
 

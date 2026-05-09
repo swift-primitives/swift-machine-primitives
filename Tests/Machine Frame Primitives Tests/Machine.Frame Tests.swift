@@ -6,7 +6,7 @@ import Testing
 // `store.insert({ ... } as @Sendable (T) throws(E) -> U)`. See
 // `swift-institute/Experiments/silgen-sendable-typed-throws-closure-cast/`.
 extension Machine.Capture.Store where Mode == Machine.Capture.Mode.Reference {
-    fileprivate mutating func insert<In: Sendable, Out: Sendable, E: Error>(
+    fileprivate mutating func insert<In: Sendable, Out: Sendable, E: Swift.Error>(
         _ fn: @Sendable @escaping (In) throws(E) -> Out
     ) -> Machine.Capture.ID<@Sendable (In) throws(E) -> Out> {
         func dispatchToBase<V: Sendable>(_ v: V) -> Machine.Capture.ID<V> { self.insert(v) }
@@ -22,7 +22,7 @@ struct MachineFrameTests {
     typealias Arena = Machine.Value<Mode>.Arena
     typealias NodeID = Int
     typealias Checkpoint = Int
-    enum TestError: Error, Sendable { case failed }
+    enum TestError: Swift.Error, Sendable { case failed }
     typealias TestFrame = Machine.Frame<NodeID, Checkpoint, Mode, TestError, Never>
 
     @Test
@@ -241,7 +241,7 @@ struct MachineFrameExtraTests {
     typealias Value = Machine.Value<Mode>
     typealias NodeID = Int
     typealias Checkpoint = Int
-    enum TestError: Error, Sendable { case failed }
+    enum TestError: Swift.Error, Sendable { case failed }
 
     struct MemoEntry: Equatable, Sendable {
         var nodeId: NodeID

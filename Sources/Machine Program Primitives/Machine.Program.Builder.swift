@@ -3,7 +3,7 @@ extension Machine {
     ///
     /// `Builder` accumulates nodes and captures during construction,
     /// then produces an immutable `Program` via `build()`.
-    public struct Builder<Leaf: Sendable, Failure: Error & Sendable, Mode: Sendable>: ~Copyable {
+    public struct Builder<Leaf: Sendable, Failure: Swift.Error & Sendable, Mode: Sendable>: ~Copyable {
         @usableFromInline
         var storage: Graph.Sequential<Node<Leaf, Failure, Mode>, Node<Leaf, Failure, Mode>>.Builder
 

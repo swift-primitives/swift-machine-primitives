@@ -12,7 +12,7 @@ extension Machine {
     /// The machine interpreter traverses the node graph, executing leaf operations
     /// and combining results according to the combinator structure.
     @safe
-    public enum Node<Leaf, Failure: Error, Mode> {
+    public enum Node<Leaf, Failure: Swift.Error, Mode> {
 
         /// A unique identifier for a node in the program.
         public typealias ID = Graph.Node<Self>
