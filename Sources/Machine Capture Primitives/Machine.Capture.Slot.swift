@@ -24,13 +24,16 @@ extension Machine.Capture {
 
         /// Reference-counted storage for the erased payload.
         ///
-        // WHY: Category D — structural Sendable workaround (SP-7).
+        // WHY: Category D — structural Sendable workaround (SP-7) per [MEM-SAFE-024].
         // WHY: Immutable pointer + @Sendable destroy function. UnsafeMutableRawPointer
         // WHY: blocks structural inference. No synchronization.
+        // WHY: Encapsulation invariant per [MEM-SAFE-021] — `_Storage` is `@usableFromInline`
+        // WHY: but its raw-pointer storage is internal-only; consumers see only the
+        // WHY: type-safe `Slot` surface.
         // WHEN TO REMOVE: When compiler gains structural Sendable through raw pointers.
         // TRACKING: unsafe-audit-findings.md Category D SP-7.
         @usableFromInline
-        @safe final class _Storage: @unchecked Sendable {
+        final class _Storage: @unchecked Sendable {
             @usableFromInline
             let payload: UnsafeMutableRawPointer
 

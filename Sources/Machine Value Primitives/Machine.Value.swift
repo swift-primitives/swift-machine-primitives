@@ -37,14 +37,17 @@ extension Machine {
         /// This is NOT `AnyObject`—it's a concrete class type. No `as?` casting
         /// is needed to access the payload.
         ///
-        // WHY: Category D — structural Sendable workaround (SP-7).
+        // WHY: Category D — structural Sendable workaround (SP-7) per [MEM-SAFE-024].
         // WHY: Immutable `let payload: UnsafeMutableRawPointer` + `let table: _Table`
         // WHY: after construction. UnsafeMutableRawPointer blocks structural inference.
         // WHY: No synchronization, no ~Copyable. Pointee is never mutated.
+        // WHY: Encapsulation invariant per [MEM-SAFE-021] — `_Storage` is `@usableFromInline`
+        // WHY: but its raw-pointer storage is internal-only; consumers see only the
+        // WHY: type-safe `Value` surface.
         // WHEN TO REMOVE: When compiler gains structural Sendable through raw pointers.
         // TRACKING: unsafe-audit-findings.md Category D SP-7.
         @usableFromInline
-        @safe final class _Storage: @unchecked Sendable {
+        final class _Storage: @unchecked Sendable {
             @usableFromInline
             let payload: UnsafeMutableRawPointer
 
@@ -68,8 +71,15 @@ extension Machine {
         /// not user-provided runtime values. This is acceptable for Embedded
         /// compatibility as it's equivalent to generic specialization—no closure
         /// context with user data, only compiler-generated type information.
+        ///
+        // SAFETY: `_Table` stores a single immutable `@Sendable` closure
+        // SAFETY: specialised at construction time for `T: ~Copyable`. The
+        // SAFETY: closure captures only type metadata (T's layout), not
+        // SAFETY: runtime values; the `Sendable` conformance is structural.
+        // SAFETY: Encapsulation invariant per [MEM-SAFE-021] — internal table
+        // SAFETY: type used only as `_Storage`'s table field.
         @usableFromInline
-        @safe struct _Table: Sendable {
+        struct _Table: Sendable {
             /// Destroys and deallocates the payload.
             /// Specialized for `T` at construction time.
             @usableFromInline
