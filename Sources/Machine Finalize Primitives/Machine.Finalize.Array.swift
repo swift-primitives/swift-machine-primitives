@@ -3,6 +3,9 @@ extension Machine.Finalize {
     ///
     /// Converts a collection of values into a single typed array value,
     /// used for the `many` combinator.
+    // SAFETY: Safe by construction — backing storage uses only stdlib
+    // SAFETY: safe types; `@safe` documents that this type performs no
+    // SAFETY: unsafe operations.
     @safe
     public struct Array<Mode>: Sendable {
         public let capture: Machine.Capture.RawID

@@ -24,6 +24,8 @@ extension Machine {
     /// The only public construction paths are:
     /// - `Value<Mode.Reference>.make<T: Sendable & ~Copyable>(_:)` - requires Sendable payload
     /// - `Value<Mode.Unchecked>.make<T: ~Copyable>(_:)` - no Sendable requirement
+    // SAFETY: Encapsulates unsafe internals behind a safe API; see
+    // SAFETY: [MEM-SAFE-024] for the absorber-pattern taxonomy.
     @safe
     public struct Value<Mode> {
         @usableFromInline
@@ -139,6 +141,8 @@ extension Machine {
         /// Carries a lifetime dependency back to the `Value`, ensuring the
         /// reference cannot outlive its storage. Access the payload via
         /// the `value` property (`_read` accessor).
+        // SAFETY: Encapsulates unsafe internals behind a safe API; see
+        // SAFETY: [MEM-SAFE-024] for the absorber-pattern taxonomy.
         @safe
         public struct Ref<T: ~Copyable>: ~Copyable, ~Escapable {
             @usableFromInline

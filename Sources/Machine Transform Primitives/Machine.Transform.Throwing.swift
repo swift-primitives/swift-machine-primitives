@@ -3,6 +3,9 @@ extension Machine.Transform {
     ///
     /// Generic over `Failure` to support both generic error types (Parsing)
     /// and fixed error types (Binary's `Fault`).
+    // SAFETY: Safe by construction — backing storage uses only stdlib
+    // SAFETY: safe types; `@safe` documents that this type performs no
+    // SAFETY: unsafe operations.
     @safe
     public struct Throwing<Mode, Failure: Swift.Error>: Sendable {
         public let capture: Machine.Capture.RawID

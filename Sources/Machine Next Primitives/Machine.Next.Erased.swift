@@ -3,6 +3,9 @@ extension Machine.Next {
     ///
     /// Given a value, selects the next node ID to execute, enabling
     /// cursor-agnostic flatMap operations in the machine.
+    // SAFETY: Safe by construction — backing storage uses only stdlib
+    // SAFETY: safe types; `@safe` documents that this type performs no
+    // SAFETY: unsafe operations.
     @safe
     public struct Erased<Mode, NodeID>: Sendable {
         public let capture: Machine.Capture.RawID

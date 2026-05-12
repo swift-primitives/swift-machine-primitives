@@ -8,6 +8,9 @@ extension Machine {
     /// - `Mode`: The capture mode (`Mode.Reference` or `Mode.Unchecked`)
     /// - `Failure`: The error type for fallible operations
     /// - `Extra`: Extension point for façade-specific frame types (use `Never` if not needed)
+    // SAFETY: Safe by construction — backing storage uses only stdlib
+    // SAFETY: safe types; `@safe` documents that this type performs no
+    // SAFETY: unsafe operations.
     @safe
     public enum Frame<NodeID, Checkpoint, Mode, Failure: Swift.Error, Extra> {
         /// Apply a non-throwing transform to the result.

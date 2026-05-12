@@ -1,5 +1,8 @@
 extension Machine.Transform {
     /// A type-erased non-throwing transformation from one value to another.
+    // SAFETY: Safe by construction — backing storage uses only stdlib
+    // SAFETY: safe types; `@safe` documents that this type performs no
+    // SAFETY: unsafe operations.
     @safe
     public struct Erased<Mode>: Sendable {
         public let capture: Machine.Capture.RawID

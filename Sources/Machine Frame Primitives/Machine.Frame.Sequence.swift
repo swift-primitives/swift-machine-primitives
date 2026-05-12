@@ -2,6 +2,9 @@ extension Machine.Frame {
     /// Sequence continuation state within a frame.
     ///
     /// Tracks progress through a two-element sequence operation.
+    // SAFETY: Safe by construction — backing storage uses only stdlib
+    // SAFETY: safe types; `@safe` documents that this type performs no
+    // SAFETY: unsafe operations.
     @safe
     public enum Sequence {
         /// Waiting to execute the second child.

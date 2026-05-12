@@ -3,6 +3,9 @@ extension Machine.Combine {
     ///
     /// Combines two values into a single result value, used for
     /// sequence operations in the machine.
+    // SAFETY: Safe by construction — backing storage uses only stdlib
+    // SAFETY: safe types; `@safe` documents that this type performs no
+    // SAFETY: unsafe operations.
     @safe
     public struct Erased<Mode>: Sendable {
         public let capture: Machine.Capture.RawID
