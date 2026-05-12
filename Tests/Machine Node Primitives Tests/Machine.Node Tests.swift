@@ -249,7 +249,7 @@ struct MachineNodeTests {
 
         #expect(id1 == id2)
         #expect(id1 != id3)
-        #expect(id1.rawValue == 42)
+        #expect(id1.underlying == 42)
     }
 
     @Test
