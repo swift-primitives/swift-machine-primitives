@@ -32,4 +32,8 @@ extension Machine.Capture.Frozen where Mode == Machine.Capture.Mode.Unchecked {
         return try body(value)
     }
 }
-// No Sendable conformance for Unchecked - Mode.Unchecked is not Sendable
+// No Sendable conformance for Frozen<Unchecked>: Mode.Unchecked is itself
+// non-Sendable per [MEM-SEND-013] Pattern B (terminal direction). Consumers
+// transport assembled `Program`/`Parser` values across isolation domains via
+// `sending` at the program-transport boundary, not via a structural Sendable
+// conformance on Frozen<Unchecked>.
