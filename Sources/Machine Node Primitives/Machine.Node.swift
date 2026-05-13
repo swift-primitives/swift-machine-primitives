@@ -69,7 +69,7 @@ where Leaf: Sendable, Failure: Sendable, Mode: Sendable {}
 
 // MARK: - Graph Adjacency
 
-extension Machine.Node where Leaf: Sendable, Failure: Sendable, Mode: Sendable {
+extension Machine.Node where Leaf: Sendable, Failure: Sendable {
     /// The structurally adjacent node IDs.
     public var adjacent: [ID] {
         switch self {
