@@ -39,7 +39,7 @@ extension Machine {
         /// This is NOT `AnyObject`—it's a concrete class type. No `as?` casting
         /// is needed to access the payload.
         ///
-        // WHY: Category D — structural Sendable workaround (SP-7) per [MEM-SAFE-024].
+        // WHY: Category D — structural Sendable workaround (SP-5) per [MEM-SAFE-024].
         // WHY: Immutable `let payload: UnsafeMutableRawPointer` + `let table: _Table`
         // WHY: after construction. UnsafeMutableRawPointer blocks structural inference.
         // WHY: No synchronization, no ~Copyable. Pointee is never mutated.
@@ -47,7 +47,7 @@ extension Machine {
         // WHY: but its raw-pointer storage is internal-only; consumers see only the
         // WHY: type-safe `Value` surface.
         // WHEN TO REMOVE: When compiler gains structural Sendable through raw pointers.
-        // TRACKING: unsafe-audit-findings.md Category D SP-7.
+        // TRACKING: unsafe-audit-findings.md Category D SP-5.
         @usableFromInline
         final class _Storage: @unchecked Sendable {
             @usableFromInline
