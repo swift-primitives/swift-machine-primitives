@@ -14,8 +14,8 @@ let package = Package(
     products: [
         // MARK: - Namespace
         .library(
-            name: "Machine Namespace",
-            targets: ["Machine Namespace"]
+            name: "Machine Primitive",
+            targets: ["Machine Primitive"]
         ),
         .library(
             name: "Machine Primitives",
@@ -76,7 +76,7 @@ let package = Package(
     targets: [
         // MARK: - Namespace
         .target(
-            name: "Machine Namespace",
+            name: "Machine Primitive",
             dependencies: []
         ),
 
@@ -85,7 +85,7 @@ let package = Package(
         .target(
             name: "Machine Primitives Core",
             dependencies: [
-                "Machine Namespace",
+                "Machine Primitive",
                 .product(name: "Graph Primitives Core", package: "swift-graph-primitives"),
             ]
         ),
@@ -180,7 +180,7 @@ let package = Package(
         .target(
             name: "Machine Primitives",
             dependencies: [
-                "Machine Namespace",
+                "Machine Primitive",
                 "Machine Primitives Core",
                 "Machine Value Primitives",
                 "Machine Capture Primitives",
