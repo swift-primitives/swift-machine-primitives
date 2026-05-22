@@ -9,7 +9,7 @@ extension Machine {
     /// - `Leaf`: The primitive cursor operations
     /// - `Failure`: The error type for fallible operations
     /// - `Mode`: The capture mode (`Mode.Reference` or `Mode.Unchecked`)
-    public struct Program<Leaf, Failure: Swift.Error & Sendable, Mode> {
+    public struct Program<Leaf, Failure: Swift.Error, Mode> {
         public let graph: Graph.Sequential<Node<Leaf, Failure, Mode>, Node<Leaf, Failure, Mode>>
         public let captures: Machine.Capture.Frozen<Mode>
         public let maxDepth: Int?
