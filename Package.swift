@@ -71,7 +71,7 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(path: "../swift-graph-primitives"),
+        .package(url: "https://github.com/swift-primitives/swift-graph-primitives.git", branch: "main"),
     ],
     targets: [
         // MARK: - Namespace
