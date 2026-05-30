@@ -192,7 +192,11 @@ let package = Package(
                 "Machine Node Primitives",
                 "Machine Program Primitives",
                 "Machine Convenience Primitives",
-                .product(name: "Graph Primitives", package: "swift-graph-primitives"),
+                // Narrowed to Graph Primitives Core: the Machine umbrella only ever
+                // surfaces Graph.Node/Adjacency/Sequential/Analyze (all in Core).
+                // Depending on the full Graph umbrella over-broadly re-exported the
+                // graph algorithms + their data-structure cohort ([MOD-006]/[MOD-015]).
+                .product(name: "Graph Primitives Core", package: "swift-graph-primitives"),
             ]
         ),
 
