@@ -51,17 +51,6 @@
       "scope": null
     },
     {
-      "file": "audit.md",
-      "displayName": "audit.md",
-      "topic": "Consolidated audit (legacy: implementation-quality-audit-graph-machine-parser.md)",
-      "date": "2026-04-08",
-      "status": "AUDIT",
-      "statusDetail": null,
-      "statusRaw": "AUDIT",
-      "tier": null,
-      "scope": null
-    },
-    {
       "file": "machine-value-api-surface.md",
       "displayName": "machine-value-api-surface.md",
       "topic": "Machine.Value API surface: value-level functor operations and mechanism confinement",
