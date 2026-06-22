@@ -1,4 +1,4 @@
-public import Graph_Primitives_Core
+public import Graph_Primitives
 
 extension Machine {
     /// A node in the machine's program graph.

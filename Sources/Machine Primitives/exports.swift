@@ -1,4 +1,4 @@
-@_exported public import Graph_Primitives_Core
+@_exported public import Graph_Primitives
 @_exported public import Machine_Capture_Primitives
 @_exported public import Machine_Combine_Primitives
 @_exported public import Machine_Convenience_Primitives
