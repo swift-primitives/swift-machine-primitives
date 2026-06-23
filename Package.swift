@@ -22,10 +22,6 @@ let package = Package(
             targets: ["Machine Primitives"]
         ),
         .library(
-            name: "Machine Primitives Core",
-            targets: ["Machine Primitives Core"]
-        ),
-        .library(
             name: "Machine Value Primitives",
             targets: ["Machine Value Primitives"]
         ),
@@ -78,18 +74,6 @@ let package = Package(
         .target(
             name: "Machine Primitive",
             dependencies: []
-        ),
-
-        // MARK: - Core (DEPRECATED transitional shim — L1 core-dissolution sweep 2026-06-23)
-        // Exports-only re-export of the dissolved Core surface (root + funneled
-        // Graph). Removed in the cleanup wave once consumers repoint to the umbrella.
-
-        .target(
-            name: "Machine Primitives Core",
-            dependencies: [
-                "Machine Primitive",
-                .product(name: "Graph Primitives", package: "swift-graph-primitives"),
-            ]
         ),
 
         // MARK: - Value & Capture
