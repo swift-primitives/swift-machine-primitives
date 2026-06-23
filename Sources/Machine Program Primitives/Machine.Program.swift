@@ -1,4 +1,5 @@
 // SDG(specializes): Machine.Program is a directed graph with Graph.Sequential storage
+public import Graph_Primitives
 
 extension Machine {
     /// A program consisting of a graph of nodes.

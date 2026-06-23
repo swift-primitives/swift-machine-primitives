@@ -80,7 +80,9 @@ let package = Package(
             dependencies: []
         ),
 
-        // MARK: - Core
+        // MARK: - Core (DEPRECATED transitional shim — L1 core-dissolution sweep 2026-06-23)
+        // Exports-only re-export of the dissolved Core surface (root + funneled
+        // Graph). Removed in the cleanup wave once consumers repoint to the umbrella.
 
         .target(
             name: "Machine Primitives Core",
@@ -95,13 +97,13 @@ let package = Package(
         .target(
             name: "Machine Value Primitives",
             dependencies: [
-                "Machine Primitives Core",
+                "Machine Primitive",
             ]
         ),
         .target(
             name: "Machine Capture Primitives",
             dependencies: [
-                "Machine Primitives Core",
+                "Machine Primitive",
             ]
         ),
 
@@ -156,6 +158,9 @@ let package = Package(
                 "Machine Combine Primitives",
                 "Machine Next Primitives",
                 "Machine Finalize Primitives",
+                // Node.ID = Graph.Node, Adjacency.Extract — declared directly per [MOD-038]
+                // (previously reached transitively via the dissolved Core funnel).
+                .product(name: "Graph Primitives", package: "swift-graph-primitives"),
             ]
         ),
         .target(
@@ -163,6 +168,9 @@ let package = Package(
             dependencies: [
                 "Machine Node Primitives",
                 "Machine Capture Primitives",
+                // Program/Builder use Graph.Sequential storage directly per [MOD-038]
+                // (previously reached transitively via the dissolved Core funnel).
+                .product(name: "Graph Primitives", package: "swift-graph-primitives"),
             ]
         ),
 
@@ -181,7 +189,6 @@ let package = Package(
             name: "Machine Primitives",
             dependencies: [
                 "Machine Primitive",
-                "Machine Primitives Core",
                 "Machine Value Primitives",
                 "Machine Capture Primitives",
                 "Machine Transform Primitives",

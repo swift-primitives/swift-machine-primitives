@@ -1,3 +1,5 @@
+public import Graph_Primitives
+
 extension Machine {
     /// A mutable builder for constructing a `Program`.
     ///
