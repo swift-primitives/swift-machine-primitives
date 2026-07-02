@@ -1,6 +1,6 @@
 # .github/metadata.yaml
 # Triaged by AI-assisted bulk pass (2026-04-29).
-description: "Machine types for Swift."
+description: "Defunctionalized parser graphs with transforms stored by handle, enabling zero-copy parsing across abstraction boundaries for Swift."
 topics:
   - primitives
   - machine
