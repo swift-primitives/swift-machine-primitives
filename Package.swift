@@ -144,7 +144,7 @@ let package = Package(
                 "Machine Finalize Primitives",
                 // Node.ID = Graph.Node, Adjacency.Extract — declared directly per [MOD-038]
                 // (previously reached transitively via the dissolved Core funnel).
-                .product(name: "Graph Primitives", package: "swift-graph-primitives"),
+                .product(name: "Graph Sequential Primitives", package: "swift-graph-primitives"),
             ]
         ),
         .target(
@@ -154,7 +154,7 @@ let package = Package(
                 "Machine Capture Primitives",
                 // Program/Builder use Graph.Sequential storage directly per [MOD-038]
                 // (previously reached transitively via the dissolved Core funnel).
-                .product(name: "Graph Primitives", package: "swift-graph-primitives"),
+                .product(name: "Graph Sequential Primitives", package: "swift-graph-primitives"),
             ]
         ),
 
@@ -187,7 +187,7 @@ let package = Package(
                 // surfaces Graph.Node/Adjacency/Sequential/Analyze (all in Core).
                 // Depending on the full Graph umbrella over-broadly re-exported the
                 // graph algorithms + their data-structure cohort ([MOD-006]/[MOD-015]).
-                .product(name: "Graph Primitives", package: "swift-graph-primitives"),
+                .product(name: "Graph Sequential Primitives", package: "swift-graph-primitives"),
             ]
         ),
 

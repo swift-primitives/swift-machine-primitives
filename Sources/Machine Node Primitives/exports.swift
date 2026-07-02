@@ -1,4 +1,4 @@
-@_exported public import Graph_Primitives
+@_exported public import Graph_Sequential_Primitives
 @_exported public import Machine_Combine_Primitives
 @_exported public import Machine_Finalize_Primitives
 @_exported public import Machine_Next_Primitives
