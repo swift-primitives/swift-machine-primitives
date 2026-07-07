@@ -13,6 +13,7 @@ extension Machine.Capture {
         @usableFromInline
         var slots: [Slot]
 
+        /// Creates an empty capture store.
         @inlinable
         public init() {
             self.slots = []

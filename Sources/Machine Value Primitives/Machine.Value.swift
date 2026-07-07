@@ -1,4 +1,6 @@
 extension Machine {
+    // SAFETY: Encapsulates unsafe internals behind a safe API; see
+    // SAFETY: [MEM-SAFE-024] for the absorber-pattern taxonomy.
     /// A type-erased value container for the machine's runtime.
     ///
     /// `Value` stores any type-erased value during machine execution, preserving
@@ -24,8 +26,6 @@ extension Machine {
     /// The only public construction paths are:
     /// - `Value<Mode.Reference>.make<T: Sendable & ~Copyable>(_:)` - requires Sendable payload
     /// - `Value<Mode.Unchecked>.make<T: ~Copyable>(_:)` - no Sendable requirement
-    // SAFETY: Encapsulates unsafe internals behind a safe API; see
-    // SAFETY: [MEM-SAFE-024] for the absorber-pattern taxonomy.
     @safe
     public struct Value<Mode> {
         @usableFromInline
@@ -34,11 +34,6 @@ extension Machine {
         @usableFromInline
         let storage: _Storage
 
-        /// Reference-counted storage with type-specialized destruction.
-        ///
-        /// This is NOT `AnyObject`—it's a concrete class type. No `as?` casting
-        /// is needed to access the payload.
-        ///
         // WHY: Category D — structural Sendable workaround (SP-5) per [MEM-SAFE-024].
         // WHY: Immutable `let payload: UnsafeMutableRawPointer` + `let table: _Table`
         // WHY: after construction. UnsafeMutableRawPointer blocks structural inference.
@@ -48,6 +43,10 @@ extension Machine {
         // WHY: type-safe `Value` surface.
         // WHEN TO REMOVE: When compiler gains structural Sendable through raw pointers.
         // TRACKING: unsafe-audit-findings.md Category D SP-5.
+        /// Reference-counted storage with type-specialized destruction.
+        ///
+        /// This is NOT `AnyObject`—it's a concrete class type. No `as?` casting
+        /// is needed to access the payload.
         @usableFromInline
         final class _Storage: @unchecked Sendable {
             @usableFromInline
@@ -67,22 +66,22 @@ extension Machine {
             }
         }
 
-        /// Table of type-specialized operations.
-        ///
-        /// The `destroy` function captures only type metadata (`T`'s layout),
-        /// not user-provided runtime values. This is acceptable for Embedded
-        /// compatibility as it's equivalent to generic specialization—no closure
-        /// context with user data, only compiler-generated type information.
-        ///
         // SAFETY: `_Table` stores a single immutable `@Sendable` closure
         // SAFETY: specialised at construction time for `T: ~Copyable`. The
         // SAFETY: closure captures only type metadata (T's layout), not
         // SAFETY: runtime values; the `Sendable` conformance is structural.
         // SAFETY: Encapsulation invariant per [MEM-SAFE-021] — internal table
         // SAFETY: type used only as `_Storage`'s table field.
+        /// Table of type-specialized operations.
+        ///
+        /// The `destroy` function captures only type metadata (`T`'s layout),
+        /// not user-provided runtime values. This is acceptable for Embedded
+        /// compatibility as it's equivalent to generic specialization—no closure
+        /// context with user data, only compiler-generated type information.
         @usableFromInline
         struct _Table: Sendable {
             /// Destroys and deallocates the payload.
+            ///
             /// Specialized for `T` at construction time.
             @usableFromInline
             let destroy: @Sendable (UnsafeMutableRawPointer) -> Void
@@ -136,13 +135,13 @@ extension Machine {
 
         // MARK: - ~Escapable Ref
 
+        // SAFETY: Encapsulates unsafe internals behind a safe API; see
+        // SAFETY: [MEM-SAFE-024] for the absorber-pattern taxonomy.
         /// A `~Escapable` reference to a stored value.
         ///
         /// Carries a lifetime dependency back to the `Value`, ensuring the
         /// reference cannot outlive its storage. Access the payload via
         /// the `value` property (`_read` accessor).
-        // SAFETY: Encapsulates unsafe internals behind a safe API; see
-        // SAFETY: [MEM-SAFE-024] for the absorber-pattern taxonomy.
         @safe
         public struct Ref<T: ~Copyable>: ~Copyable, ~Escapable {
             @usableFromInline
@@ -182,6 +181,12 @@ extension Machine {
 
 // MARK: - Reference Mode Value Operations
 
+// swift-format-ignore
+// AmbiguousTrailingClosureOverload false-positive: the two `apply` overloads
+// below are the standard throwing/non-throwing pair (the stdlib `map` shape) —
+// overload resolution picks by the closure's throwing-ness, and `rethrows`-style
+// unification is unavailable because the throwing overload's typed `throws(E)`
+// must propagate to the return-effect signature.
 extension Machine.Value where Mode == Machine.Capture.Mode.Reference {
     /// Applies a typed function to this erased value, producing a new erased value.
     ///
@@ -212,6 +217,9 @@ extension Machine.Value where Mode == Machine.Capture.Mode.Reference {
 
 // MARK: - Unchecked Mode Value Operations
 
+// swift-format-ignore
+// AmbiguousTrailingClosureOverload false-positive: the standard
+// throwing/non-throwing `apply` overload pair (see the Reference-mode note above).
 extension Machine.Value where Mode == Machine.Capture.Mode.Unchecked {
     /// Applies a typed function to this erased value, producing a new erased value.
     ///

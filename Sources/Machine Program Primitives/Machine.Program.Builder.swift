@@ -9,9 +9,13 @@ extension Machine {
         @usableFromInline
         var storage: Graph.Sequential<Node<Leaf, Failure, Mode>, Node<Leaf, Failure, Mode>>.Builder
 
+        /// The mutable capture store accumulated alongside the node graph.
         public var captures: Capture.Store<Mode>
+
+        /// Optional maximum machine-stack depth enforced at run time.
         public let maxDepth: Int?
 
+        /// Creates an empty builder, optionally bounding the machine-stack depth.
         @inlinable
         public init(maxDepth: Int? = nil) {
             self.storage = .init()
@@ -25,6 +29,7 @@ extension Machine {
             storage.count
         }
 
+        /// Appends a node to the program graph, returning its ID.
         @inlinable
         public mutating func allocate(_ node: Node<Leaf, Failure, Mode>) -> Node<Leaf, Failure, Mode>.ID {
             storage.allocate(node)
@@ -37,6 +42,7 @@ extension Machine {
             set { storage[id] = newValue }
         }
 
+        /// Consumes the builder, producing the immutable program.
         @inlinable
         public consuming func build() -> Program<Leaf, Failure, Mode> {
             Program(

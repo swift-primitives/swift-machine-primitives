@@ -1,15 +1,14 @@
 extension Machine.Capture {
-    /// Table-based erased storage for a captured value.
-    ///
-    /// `Slot` stores a type-erased value using raw pointer storage and a
-    /// type-specialized destroy function. No existentials (`AnyObject`, `Any`)
-    /// or dynamic casts (`as?`, `as!`) are used.
-    ///
     // WHY: Category D — structural Sendable workaround (SP-5).
     // WHY: Struct wraps _Storage (immutable after construction) + ObjectIdentifier.
     // WHY: @unchecked forced because inner _Storage is itself @unchecked.
     // WHEN TO REMOVE: When inner _Storage gains structural Sendable.
     // TRACKING: unsafe-audit-findings.md Category D SP-5.
+    /// Table-based erased storage for a captured value.
+    ///
+    /// `Slot` stores a type-erased value using raw pointer storage and a
+    /// type-specialized destroy function. No existentials (`AnyObject`, `Any`)
+    /// or dynamic casts (`as?`, `as!`) are used.
     public struct Slot: @unchecked Sendable {
         @usableFromInline
         let type: ObjectIdentifier
@@ -22,8 +21,6 @@ extension Machine.Capture {
             let typeName: String
         #endif
 
-        /// Reference-counted storage for the erased payload.
-        ///
         // WHY: Category D — structural Sendable workaround (SP-5) per [MEM-SAFE-024].
         // WHY: Immutable pointer + @Sendable destroy function. UnsafeMutableRawPointer
         // WHY: blocks structural inference. No synchronization.
@@ -32,6 +29,7 @@ extension Machine.Capture {
         // WHY: type-safe `Slot` surface.
         // WHEN TO REMOVE: When compiler gains structural Sendable through raw pointers.
         // TRACKING: unsafe-audit-findings.md Category D SP-5.
+        /// Reference-counted storage for the erased payload.
         @usableFromInline
         final class _Storage: @unchecked Sendable {
             @usableFromInline

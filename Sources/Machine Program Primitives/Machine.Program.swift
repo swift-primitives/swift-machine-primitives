@@ -11,8 +11,13 @@ extension Machine {
     /// - `Failure`: The error type for fallible operations
     /// - `Mode`: The capture mode (`Mode.Reference` or `Mode.Unchecked`)
     public struct Program<Leaf, Failure: Swift.Error, Mode> {
+        /// The sequentially-allocated node graph.
         public let graph: Graph.Sequential<Node<Leaf, Failure, Mode>, Node<Leaf, Failure, Mode>>
+
+        /// The frozen capture snapshot the interpreter reads at run time.
         public let captures: Machine.Capture.Frozen<Mode>
+
+        /// Optional maximum machine-stack depth enforced at run time.
         public let maxDepth: Int?
 
         @usableFromInline

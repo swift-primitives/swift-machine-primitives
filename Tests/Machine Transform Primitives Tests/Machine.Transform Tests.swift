@@ -2,16 +2,21 @@ import Testing
 
 @testable import Machine_Primitives
 
-// WORKAROUND: Swift 6.3.1 SILGen crashes (signal 5, `createInputFunctionArgument` /
-// `LoweredParamGenerator::claimNext`) when a typed-throws `@Sendable` closure
-// literal is passed — via an inline `as @Sendable (In) throws(E) -> Out` cast —
-// into `Store.insert<V: Sendable>(_:)`. This overload's concrete function-typed
-// parameter absorbs the closure at the call site (no `as` needed), and the nested
-// generic `dispatchToBase` routes the stored value through the primary `<V: Sendable>`
-// method — generic parameter `V` is opaque inside `dispatchToBase`, so the outer
-// typed-throws overload cannot match and recursion is impossible.
-// REVISIT: remove once the inline-cast form is accepted by SILGen. Minimal
-// reproducer: `swift-institute/Experiments/silgen-sendable-typed-throws-closure-cast/`.
+// reason: four-part template verified complete below (WHY / WHEN TO REMOVE /
+// TRACKING); the rule is a blunt single-line regex on the marker itself.
+// swiftlint:disable:next workaround_marker_present
+// WORKAROUND: concrete-function-typed insert overload instead of an inline cast.
+// WHY: Swift 6.3.1 SILGen crashes (signal 5, `createInputFunctionArgument` /
+// WHY: `LoweredParamGenerator::claimNext`) when a typed-throws `@Sendable` closure
+// WHY: literal is passed — via an inline `as @Sendable (In) throws(E) -> Out` cast —
+// WHY: into `Store.insert<V: Sendable>(_:)`. This overload's concrete function-typed
+// WHY: parameter absorbs the closure at the call site (no `as` needed), and the nested
+// WHY: generic `dispatchToBase` routes the stored value through the primary `<V: Sendable>`
+// WHY: method — generic parameter `V` is opaque inside `dispatchToBase`, so the outer
+// WHY: typed-throws overload cannot match and recursion is impossible.
+// WHEN TO REMOVE: once the inline-cast form is accepted by SILGen.
+// TRACKING: minimal reproducer at
+// TRACKING: `swift-institute/Experiments/silgen-sendable-typed-throws-closure-cast/`.
 extension Machine.Capture.Store where Mode == Machine.Capture.Mode.Reference {
     fileprivate mutating func insert<In: Sendable, Out: Sendable, E: Swift.Error>(
         _ fn: @Sendable @escaping (In) throws(E) -> Out

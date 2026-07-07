@@ -1,6 +1,9 @@
 public import Graph_Sequential_Primitives
 
 extension Machine {
+    // SAFETY: Safe by construction — backing storage uses only stdlib
+    // SAFETY: safe types; `@safe` documents that this type performs no
+    // SAFETY: unsafe operations.
     /// A node in the machine's program graph.
     ///
     /// `Node` represents a single operation in a defunctionalized parser program.
@@ -11,9 +14,6 @@ extension Machine {
     ///
     /// The machine interpreter traverses the node graph, executing leaf operations
     /// and combining results according to the combinator structure.
-    // SAFETY: Safe by construction — backing storage uses only stdlib
-    // SAFETY: safe types; `@safe` documents that this type performs no
-    // SAFETY: unsafe operations.
     @safe
     public enum Node<Leaf, Failure: Swift.Error, Mode> {
 

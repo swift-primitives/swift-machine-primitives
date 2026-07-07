@@ -12,6 +12,7 @@ extension Machine.Capture {
     /// - `Slot` is `@unchecked Sendable` with construction-enforced invariants
     /// - The slots array is immutable (`let`)
     public struct Frozen<Mode> {
+        /// The frozen capture slots, indexed by `RawID.rawValue`.
         public let slots: [Slot]
 
         @usableFromInline
