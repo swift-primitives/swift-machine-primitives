@@ -2,9 +2,6 @@ import Testing
 
 @testable import Machine_Primitives
 
-// reason: four-part template verified complete below (WHY / WHEN TO REMOVE /
-// TRACKING); the rule is a blunt single-line regex on the marker itself.
-// swiftlint:disable:next workaround_marker_present
 // WORKAROUND: concrete-function-typed insert overload instead of an inline cast.
 // WHY: Swift 6.3.1 SILGen crashes (signal 5, `createInputFunctionArgument` /
 // WHY: `LoweredParamGenerator::claimNext`) when a typed-throws `@Sendable` closure

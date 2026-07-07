@@ -38,9 +38,6 @@ extension Machine.Transform.Throwing where Mode == Machine.Capture.Mode.Referenc
         let raw = capture.raw
         self.capture = raw
         // [API-ERR-007] Explicit throws(Failure) annotation required for type inference
-        // reason: four-part template verified complete below (WHY / WHEN TO REMOVE /
-        // TRACKING); the rule is a blunt single-line regex on the marker itself.
-        // swiftlint:disable:next workaround_marker_present
         // WORKAROUND: Direct slot access instead of withRawThrowing
         // WHY: Compiler crashes (signal 11) with nested typed throws closures
         // WHY: when withRawThrowing's body closure annotates throws(Failure).
@@ -65,9 +62,6 @@ extension Machine.Transform.Throwing where Mode == Machine.Capture.Mode.Unchecke
         let raw = capture.raw
         self.capture = raw
         // [API-ERR-007] Explicit throws(Failure) annotation required for type inference
-        // reason: four-part template verified complete below (WHY / WHEN TO REMOVE /
-        // TRACKING); the rule is a blunt single-line regex on the marker itself.
-        // swiftlint:disable:next workaround_marker_present
         // WORKAROUND: Direct slot access instead of withRawThrowing (see Reference init above)
         // WHY: Compiler crashes (signal 11) with nested typed throws closures
         // WHY: when withRawThrowing's body closure annotates throws(Failure).
