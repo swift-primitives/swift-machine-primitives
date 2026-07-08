@@ -40,72 +40,74 @@ extension Machine.Value {
             self.nextSlot = 0
             self.generation = 0
         }
+    }
+}
 
-        /// Allocates a value in the arena and returns a handle to it.
-        ///
-        /// The returned handle includes the current arena generation for
-        /// ABA prevention.
-        @inlinable
-        public mutating func allocate(_ value: consuming Machine.Value<Mode>) -> Handle {
-            let slot = nextSlot
-            if Int(slot) >= values.count {
-                values.append(contentsOf: repeatElement(nil, count: values.count))
-            }
-            values[Int(slot)] = value
-            nextSlot += 1
-            return Machine.Value._makeHandle(slot: slot, generation: generation)
+extension Machine.Value.Arena {
+    /// Allocates a value in the arena and returns a handle to it.
+    ///
+    /// The returned handle includes the current arena generation for
+    /// ABA prevention.
+    @inlinable
+    public mutating func allocate(_ value: consuming Machine.Value<Mode>) -> Machine.Value<Mode>.Handle {
+        let slot = nextSlot
+        if Int(slot) >= values.count {
+            values.append(contentsOf: repeatElement(nil, count: values.count))
         }
+        values[Int(slot)] = value
+        nextSlot += 1
+        return Machine.Value._makeHandle(slot: slot, generation: generation)
+    }
 
-        /// Validates that a handle belongs to the current arena generation.
-        @inlinable
-        func validateHandle(_ handle: Handle, operation: StaticString) {
-            guard handle.generation == generation else {
-                fatalError("Arena.\(operation): stale handle (generation \(handle.generation), current \(generation))")
-            }
+    /// Validates that a handle belongs to the current arena generation.
+    @inlinable
+    package func validateHandle(_ handle: Machine.Value<Mode>.Handle, operation: StaticString) {
+        guard handle.generation == generation else {
+            fatalError("Arena.\(operation): stale handle (generation \(handle.generation), current \(generation))")
         }
+    }
 
-        /// Reads the value at the given handle without removing it.
-        ///
-        /// - Parameter handle: A valid handle from this arena.
-        /// - Returns: The value at the handle.
-        /// - Precondition: The handle must be valid (correct generation, non-empty slot).
-        @inlinable
-        public func read(_ handle: Handle) -> Machine.Value<Mode> {
-            validateHandle(handle, operation: "read")
-            let slot = Machine.Value<Mode>._slot(handle)
-            guard let value = values[Int(slot)] else {
-                fatalError("Arena.read: slot \(slot) is empty")
-            }
-            return value
+    /// Reads the value at the given handle without removing it.
+    ///
+    /// - Parameter handle: A valid handle from this arena.
+    /// - Returns: The value at the handle.
+    /// - Precondition: The handle must be valid (correct generation, non-empty slot).
+    @inlinable
+    public func read(_ handle: Machine.Value<Mode>.Handle) -> Machine.Value<Mode> {
+        validateHandle(handle, operation: "read")
+        let slot = Machine.Value<Mode>._slot(handle)
+        guard let value = values[Int(slot)] else {
+            fatalError("Arena.read: slot \(slot) is empty")
         }
+        return value
+    }
 
-        /// Releases and returns the value at the given handle.
-        ///
-        /// - Parameter handle: A valid handle from this arena.
-        /// - Returns: The value that was at the handle.
-        /// - Precondition: The handle must be valid (correct generation, non-empty slot).
-        @inlinable
-        public mutating func release(_ handle: Handle) -> Machine.Value<Mode> {
-            validateHandle(handle, operation: "release")
-            let slot = Machine.Value<Mode>._slot(handle)
-            guard let value = values[Int(slot)] else {
-                fatalError("Arena.release: slot \(slot) is empty")
-            }
-            values[Int(slot)] = nil
-            return value
+    /// Releases and returns the value at the given handle.
+    ///
+    /// - Parameter handle: A valid handle from this arena.
+    /// - Returns: The value that was at the handle.
+    /// - Precondition: The handle must be valid (correct generation, non-empty slot).
+    @inlinable
+    public mutating func release(_ handle: Machine.Value<Mode>.Handle) -> Machine.Value<Mode> {
+        validateHandle(handle, operation: "release")
+        let slot = Machine.Value<Mode>._slot(handle)
+        guard let value = values[Int(slot)] else {
+            fatalError("Arena.release: slot \(slot) is empty")
         }
+        values[Int(slot)] = nil
+        return value
+    }
 
-        /// Resets the arena for reuse, clearing all stored values.
-        ///
-        /// All previously-issued handles become invalid after this call.
-        /// The arena generation is incremented to detect stale handle usage.
-        @inlinable
-        public mutating func reset() {
-            for i in 0..<Int(nextSlot) {
-                values[i] = nil
-            }
-            nextSlot = 0
-            generation &+= 1  // Increment with wrapping
+    /// Resets the arena for reuse, clearing all stored values.
+    ///
+    /// All previously-issued handles become invalid after this call.
+    /// The arena generation is incremented to detect stale handle usage.
+    @inlinable
+    public mutating func reset() {
+        for i in 0..<Int(nextSlot) {
+            values[i] = nil
         }
+        nextSlot = 0
+        generation &+= 1  // Increment with wrapping
     }
 }

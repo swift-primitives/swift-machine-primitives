@@ -21,37 +21,6 @@ extension Machine.Capture {
             let typeName: String
         #endif
 
-        // WHY: Category D — structural Sendable workaround (SP-5) per [MEM-SAFE-024].
-        // WHY: Immutable pointer + @Sendable destroy function. UnsafeMutableRawPointer
-        // WHY: blocks structural inference. No synchronization.
-        // WHY: Encapsulation invariant per [MEM-SAFE-021] — `_Storage` is `@usableFromInline`
-        // WHY: but its raw-pointer storage is internal-only; consumers see only the
-        // WHY: type-safe `Slot` surface.
-        // WHEN TO REMOVE: When compiler gains structural Sendable through raw pointers.
-        // TRACKING: unsafe-audit-findings.md Category D SP-5.
-        /// Reference-counted storage for the erased payload.
-        @usableFromInline
-        final class _Storage: @unchecked Sendable {
-            @usableFromInline
-            let payload: UnsafeMutableRawPointer
-
-            @usableFromInline
-            let destroy: @Sendable (UnsafeMutableRawPointer) -> Void
-
-            @usableFromInline
-            init(
-                payload: UnsafeMutableRawPointer,
-                destroy: @escaping @Sendable (UnsafeMutableRawPointer) -> Void
-            ) {
-                unsafe (self.payload = payload)
-                unsafe (self.destroy = destroy)
-            }
-
-            deinit {
-                unsafe destroy(payload)
-            }
-        }
-
         /// Creates a slot storing the given value.
         @usableFromInline
         init<T>(_ value: T) {
@@ -70,26 +39,59 @@ extension Machine.Capture {
                 self.typeName = String(reflecting: T.self)
             #endif
         }
+    }
+}
 
-        /// Single choke-point for payload projection.
-        ///
-        /// All `assumingMemoryBound` calls for reading go through here.
+extension Machine.Capture.Slot {
+    // WHY: Category D — structural Sendable workaround (SP-5) per [MEM-SAFE-024].
+    // WHY: Immutable pointer + @Sendable destroy function. UnsafeMutableRawPointer
+    // WHY: blocks structural inference. No synchronization.
+    // WHY: Encapsulation invariant per [MEM-SAFE-021] — `_Storage` is `@usableFromInline`
+    // WHY: but its raw-pointer storage is internal-only; consumers see only the
+    // WHY: type-safe `Slot` surface.
+    // WHEN TO REMOVE: When compiler gains structural Sendable through raw pointers.
+    // TRACKING: unsafe-audit-findings.md Category D SP-5.
+    /// Reference-counted storage for the erased payload.
+    @usableFromInline
+    final class _Storage: @unchecked Sendable {
         @usableFromInline
-        func _project<T>(_: T.Type) -> UnsafePointer<T> {
-            unsafe UnsafePointer(storage.payload.assumingMemoryBound(to: T.self))
+        let payload: UnsafeMutableRawPointer
+
+        @usableFromInline
+        let destroy: @Sendable (UnsafeMutableRawPointer) -> Void
+
+        @usableFromInline
+        init(
+            payload: UnsafeMutableRawPointer,
+            destroy: @escaping @Sendable (UnsafeMutableRawPointer) -> Void
+        ) {
+            unsafe (self.payload = payload)
+            unsafe (self.destroy = destroy)
         }
 
-        /// Reads the stored value, checking the type matches.
-        public func read<T>(_: T.Type) -> T {
-            #if DEBUG
-                precondition(
-                    type == ObjectIdentifier(T.self),
-                    "Capture type mismatch: expected \(T.self), stored \(typeName)"
-                )
-            #else
-                precondition(type == ObjectIdentifier(T.self))
-            #endif
-            return unsafe _project(T.self).pointee
+        deinit {
+            unsafe destroy(payload)
         }
+    }
+
+    /// Single choke-point for payload projection.
+    ///
+    /// All `assumingMemoryBound` calls for reading go through here.
+    @usableFromInline
+    func _project<T>(_: T.Type) -> UnsafePointer<T> {
+        unsafe UnsafePointer(storage.payload.assumingMemoryBound(to: T.self))
+    }
+
+    /// Reads the stored value, checking the type matches.
+    public func read<T>(_: T.Type) -> T {
+        #if DEBUG
+            precondition(
+                type == ObjectIdentifier(T.self),
+                "Capture type mismatch: expected \(T.self), stored \(typeName)"
+            )
+        #else
+            precondition(type == ObjectIdentifier(T.self))
+        #endif
+        return unsafe _project(T.self).pointee
     }
 }
