@@ -2,8 +2,8 @@ import Testing
 
 @testable import Machine_Primitives
 
-@Suite("Machine.Next.Erased")
-struct MachineNextErasedTests {
+@Suite
+struct `Machine.Next.Erased Tests` {
     typealias Mode = Machine.Capture.Mode.Reference
     typealias Store = Machine.Capture.Store<Mode>
     typealias Value = Machine.Value<Mode>

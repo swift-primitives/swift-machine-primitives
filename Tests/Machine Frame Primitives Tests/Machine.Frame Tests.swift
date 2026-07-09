@@ -14,8 +14,8 @@ extension Machine.Capture.Store where Mode == Machine.Capture.Mode.Reference {
     }
 }
 
-@Suite("Machine.Frame")
-struct MachineFrameTests {
+@Suite
+struct `Machine.Frame Tests` {
     typealias Mode = Machine.Capture.Mode.Reference
     typealias Store = Machine.Capture.Store<Mode>
     typealias Value = Machine.Value<Mode>
@@ -183,8 +183,8 @@ struct MachineFrameTests {
     }
 }
 
-@Suite("Machine.Frame.Sequence")
-struct MachineFrameSequenceTests {
+@Suite
+struct `Machine.Frame.Sequence Tests` {
     typealias Mode = Machine.Capture.Mode.Reference
     typealias Store = Machine.Capture.Store<Mode>
     typealias Value = Machine.Value<Mode>
@@ -234,8 +234,8 @@ struct MachineFrameSequenceTests {
     }
 }
 
-@Suite("Machine.Frame with Extra")
-struct MachineFrameExtraTests {
+@Suite
+struct `Machine.Frame with Extra Tests` {
     typealias Mode = Machine.Capture.Mode.Reference
     typealias Store = Machine.Capture.Store<Mode>
     typealias Value = Machine.Value<Mode>

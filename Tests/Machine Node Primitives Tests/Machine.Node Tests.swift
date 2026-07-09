@@ -14,8 +14,8 @@ extension Machine.Capture.Store where Mode == Machine.Capture.Mode.Reference {
     }
 }
 
-@Suite("Machine.Node")
-struct MachineNodeTests {
+@Suite
+struct `Machine.Node Tests` {
     typealias Mode = Machine.Capture.Mode.Reference
     typealias Store = Machine.Capture.Store<Mode>
     typealias Frozen = Machine.Capture.Frozen<Mode>

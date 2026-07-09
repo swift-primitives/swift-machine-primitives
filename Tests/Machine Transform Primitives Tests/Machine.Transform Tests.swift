@@ -23,8 +23,8 @@ extension Machine.Capture.Store where Mode == Machine.Capture.Mode.Reference {
     }
 }
 
-@Suite("Machine.Transform.Erased")
-struct MachineTransformErasedTests {
+@Suite
+struct `Machine.Transform.Erased Tests` {
     typealias Mode = Machine.Capture.Mode.Reference
     typealias Value = Machine.Value<Mode>
     typealias Store = Machine.Capture.Store<Mode>
@@ -129,8 +129,8 @@ struct MachineTransformErasedTests {
     }
 }
 
-@Suite("Machine.Transform.Throwing")
-struct MachineTransformThrowingTests {
+@Suite
+struct `Machine.Transform.Throwing Tests` {
     typealias Mode = Machine.Capture.Mode.Reference
     typealias Value = Machine.Value<Mode>
     typealias Store = Machine.Capture.Store<Mode>

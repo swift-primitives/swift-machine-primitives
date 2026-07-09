@@ -2,8 +2,8 @@ import Testing
 
 @testable import Machine_Primitives
 
-@Suite("Machine.Value.Arena")
-struct MachineValueArenaTests {
+@Suite
+struct `Machine.Value.Arena Tests` {
     typealias Mode = Machine.Capture.Mode.Reference
     typealias Value = Machine.Value<Mode>
     typealias Arena = Machine.Value<Mode>.Arena
